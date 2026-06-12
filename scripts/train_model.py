@@ -13,18 +13,25 @@ import torch
 from openpyxl import load_workbook
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATASET_PATH = PROJECT_ROOT / "datasets" / "health_training_data.xlsx"
+DATASET_PATH = PROJECT_ROOT / "datasets" / "massive_health_training_data_v2.xlsx"
 MODEL_PATH = PROJECT_ROOT / "trained_models" / "health_diagnosis_model.pt"
 META_PATH = PROJECT_ROOT / "trained_models" / "health_diagnosis_model_meta.json"
 SYMPTOM_PREFIX = "symptom__"
+COLUMN_ALIASES = {
+    "disease": ("disease", "Bệnh"),
+    "age": ("age", "Tuổi"),
+    "gender": ("gender", "Giới tính"),
+    "height_cm": ("height_cm", "Chiều cao (cm)"),
+    "weight_kg": ("weight_kg", "Cân nặng (kg)"),
+    "bmi": ("bmi", "BMI"),
+}
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-
 def normalize_text(value: object) -> str:
-    return " ".join(unicodedata.normalize("NFC", str(value or "")).strip().split())
-
+    text = "" if value is None else str(value)
+    return " ".join(unicodedata.normalize("NFC", text).strip().split())
 
 @dataclass
 class DatasetMatrix:
@@ -33,7 +40,7 @@ class DatasetMatrix:
     feature_columns: list[str]
     disease_to_label: dict[str, int]
     dataset_path: Path
-
+    normalization_params: dict[str, float]
 
 @dataclass
 class DatasetSplit:
@@ -42,60 +49,169 @@ class DatasetSplit:
     valid_indices: list[int]
 
 
+def find_column_index(headers: list[object], field_name: str, required: bool = True) -> int | None:
+    normalized_headers = {
+        normalize_text(header).casefold(): index
+        for index, header in enumerate(headers)
+        if header is not None
+    }
+    for alias in COLUMN_ALIASES[field_name]:
+        index = normalized_headers.get(normalize_text(alias).casefold())
+        if index is not None:
+            return index
+
+    if required:
+        aliases = ", ".join(COLUMN_ALIASES[field_name])
+        raise ValueError(f"Dataset is missing required column '{field_name}' (accepted names: {aliases}).")
+    return None
+
+
+def parse_number(value: object, field_name: str, row_number: int) -> float | None:
+    if value is None or normalize_text(value) == "":
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Invalid numeric value for '{field_name}' at Excel row {row_number}: {value!r}"
+        ) from exc
+
+
+def encode_gender(value: object, row_number: int) -> float:
+    normalized = normalize_text(value).casefold()
+    if normalized in {"nữ", "nu", "female", "f", "1"}:
+        return 1.0
+    if normalized in {"nam", "male", "m", "0"}:
+        return 0.0
+    raise ValueError(f"Invalid gender at Excel row {row_number}: {value!r}")
+
+
+def min_max_scale(value: float, minimum: float, maximum: float) -> float:
+    if maximum == minimum:
+        return 0.0
+    return (value - minimum) / (maximum - minimum)
+
+
 def read_excel_dataset(path: Path = DATASET_PATH) -> DatasetMatrix:
-    workbook = load_workbook(path, data_only=True)
+    workbook = load_workbook(path, read_only=True, data_only=True)
     sheet = workbook["training_data"] if "training_data" in workbook.sheetnames else workbook[workbook.sheetnames[0]]
     rows = list(sheet.iter_rows(values_only=True))
 
     if len(rows) < 2:
         raise ValueError("Excel dataset does not contain training rows.")
 
-    headers = [str(value) for value in rows[0]]
-    disease_index = headers.index("disease")
-    height_index = headers.index("height_cm")
-    weight_index = headers.index("weight_kg")
-    bmi_index = headers.index("bmi")
-    symptom_indexes = [
+    headers = list(rows[0])
+    column_indices = {
+        field_name: find_column_index(headers, field_name, required=field_name not in {"age", "gender"})
+        for field_name in COLUMN_ALIASES
+    }
+    if (column_indices["age"] is None) != (column_indices["gender"] is None):
+        raise ValueError("Dataset must contain both age and gender columns, or neither.")
+
+    symptom_indices = [
         index
         for index, header in enumerate(headers)
-        if header.startswith(SYMPTOM_PREFIX)
+        if normalize_text(header).casefold().startswith(SYMPTOM_PREFIX)
     ]
+    if not symptom_indices:
+        raise ValueError(f"Dataset does not contain any '{SYMPTOM_PREFIX}' feature columns.")
+
     symptom_feature_names = [
-        f"{SYMPTOM_PREFIX}{normalize_text(headers[index].replace(SYMPTOM_PREFIX, '', 1))}"
-        for index in symptom_indexes
+        f"{SYMPTOM_PREFIX}{normalize_text(headers[index])[len(SYMPTOM_PREFIX):]}"
+        for index in symptom_indices
     ]
-    feature_columns = [
-        "height_scaled",
-        "weight_scaled",
-        "bmi_scaled",
-        *symptom_feature_names,
-    ]
+    if len(symptom_feature_names) != len(set(symptom_feature_names)):
+        raise ValueError("Dataset contains duplicate symptom feature columns.")
+
+    numeric_fields = ["height_cm", "weight_kg", "bmi"]
+    if column_indices["age"] is not None:
+        numeric_fields.insert(0, "age")
+
+    prepared_rows: list[dict[str, object]] = []
+    for row_number, row in enumerate(rows[1:], start=2):
+        disease_index = column_indices["disease"]
+        assert disease_index is not None
+        disease = normalize_text(row[disease_index])
+        if not disease:
+            continue
+
+        numeric_values = {}
+        for field_name in numeric_fields:
+            field_index = column_indices[field_name]
+            assert field_index is not None
+            numeric_values[field_name] = parse_number(row[field_index], field_name, row_number)
+
+        gender_index = column_indices["gender"]
+        prepared_rows.append(
+            {
+                "disease": disease,
+                "numeric_values": numeric_values,
+                "gender_encoded": encode_gender(row[gender_index], row_number) if gender_index is not None else None,
+                "symptoms": [
+                    parse_number(row[index], normalize_text(headers[index]), row_number) or 0.0
+                    for index in symptom_indices
+                ],
+            }
+        )
+
+    if not prepared_rows:
+        raise ValueError("Excel dataset does not contain usable training rows.")
+
+    numeric_means: dict[str, float] = {}
+    normalization_params: dict[str, float] = {}
+    for field_name in numeric_fields:
+        values = [
+            row["numeric_values"][field_name]
+            for row in prepared_rows
+            if row["numeric_values"][field_name] is not None
+        ]
+        if not values:
+            raise ValueError(f"Column '{field_name}' does not contain any numeric values.")
+
+        numeric_means[field_name] = sum(values) / len(values)
+        filled_values = [
+            row["numeric_values"][field_name]
+            if row["numeric_values"][field_name] is not None
+            else numeric_means[field_name]
+            for row in prepared_rows
+        ]
+        normalization_params[f"{field_name}_min"] = float(min(filled_values))
+        normalization_params[f"{field_name}_max"] = float(max(filled_values))
+        normalization_params[f"{field_name}_default"] = float(numeric_means[field_name])
+
+    base_feature_columns = [f"{field_name}_scaled" for field_name in numeric_fields]
+    if column_indices["gender"] is not None:
+        base_feature_columns.insert(1, "gender_encoded")
+    feature_columns = [*base_feature_columns, *symptom_feature_names]
 
     diseases: list[str] = []
     feature_rows: list[list[float]] = []
     label_rows: list[int] = []
-
-    for row in rows[1:]:
-        disease = normalize_text(row[disease_index])
+    for row in prepared_rows:
+        disease = row["disease"]
         if disease not in diseases:
             diseases.append(disease)
 
-    disease_to_label = {disease: index for index, disease in enumerate(diseases)}
+        numeric_values = row["numeric_values"]
+        features = []
+        for field_name in numeric_fields:
+            value = numeric_values[field_name]
+            if value is None:
+                value = numeric_means[field_name]
+            features.append(
+                min_max_scale(
+                    value,
+                    normalization_params[f"{field_name}_min"],
+                    normalization_params[f"{field_name}_max"],
+                )
+            )
+            if field_name == "age" and row["gender_encoded"] is not None:
+                features.append(row["gender_encoded"])
+        features.extend(row["symptoms"])
+        feature_rows.append(features)
 
-    for row in rows[1:]:
-        disease = normalize_text(row[disease_index])
-        height_cm = float(row[height_index] or 0)
-        weight_kg = float(row[weight_index] or 0)
-        bmi = float(row[bmi_index] or 0)
-        feature_rows.append(
-            [
-                height_cm / 200,
-                weight_kg / 120,
-                bmi / 45,
-                *[float(row[index] or 0) for index in symptom_indexes],
-            ]
-        )
-        label_rows.append(disease_to_label[disease])
+    disease_to_label = {disease: index for index, disease in enumerate(diseases)}
+    label_rows = [disease_to_label[row["disease"]] for row in prepared_rows]
 
     return DatasetMatrix(
         features=torch.tensor(feature_rows, dtype=torch.float32),
@@ -103,8 +219,8 @@ def read_excel_dataset(path: Path = DATASET_PATH) -> DatasetMatrix:
         feature_columns=feature_columns,
         disease_to_label=disease_to_label,
         dataset_path=path,
+        normalization_params=normalization_params,
     )
-
 
 def stratified_split(labels: torch.Tensor, seed: int = 12) -> DatasetSplit:
     rng = random.Random(seed)
@@ -151,7 +267,6 @@ def stratified_split(labels: torch.Tensor, seed: int = 12) -> DatasetSplit:
         valid_indices=valid_indices,
     )
 
-
 def predict_knn(
     query_features: torch.Tensor,
     train_features: torch.Tensor,
@@ -196,7 +311,6 @@ def predict_knn(
 
     return torch.tensor(predictions, dtype=torch.long)
 
-
 def average_distance_for_label(labels: torch.Tensor, distances: torch.Tensor, label: int) -> float:
     matching_distances = [
         distance
@@ -205,12 +319,10 @@ def average_distance_for_label(labels: torch.Tensor, distances: torch.Tensor, la
     ]
     return sum(matching_distances) / len(matching_distances)
 
-
 def accuracy_score(predictions: torch.Tensor, labels: torch.Tensor) -> float:
     if labels.numel() == 0:
         return 0.0
     return (predictions == labels).float().mean().item()
-
 
 def evaluate_split(
     features: torch.Tensor,
@@ -223,7 +335,6 @@ def evaluate_split(
         return 0.0
     predictions = predict_knn(features, train_features, train_labels, k)
     return round(accuracy_score(predictions, labels), 4)
-
 
 def build_artifact(matrix: DatasetMatrix, split: DatasetSplit, k: int, seed: int) -> dict:
     train_features = matrix.features[split.train_indices]
@@ -274,13 +385,8 @@ def build_artifact(matrix: DatasetMatrix, split: DatasetSplit, k: int, seed: int
             "test": split.test_indices,
             "valid": split.valid_indices,
         },
-        "normalization": {
-            "height_cm_divisor": 200,
-            "weight_kg_divisor": 120,
-            "bmi_divisor": 45,
-        },
+        "normalization": matrix.normalization_params,
     }
-
 
 def save_artifact(artifact: dict, matrix: DatasetMatrix, model_path: Path, meta_path: Path) -> Path:
     model_path.parent.mkdir(parents=True, exist_ok=True)
@@ -297,6 +403,7 @@ def save_artifact(artifact: dict, matrix: DatasetMatrix, model_path: Path, meta_
                 "classes": len(matrix.disease_to_label),
                 "metrics": artifact["metrics"],
                 "disease_to_label": matrix.disease_to_label,
+                "normalization": artifact["normalization"],
             },
             ensure_ascii=False,
             indent=2,
@@ -305,10 +412,8 @@ def save_artifact(artifact: dict, matrix: DatasetMatrix, model_path: Path, meta_
     )
     return model_path
 
-
 def resolve_path(path: Path) -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
-
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -345,7 +450,6 @@ def main() -> None:
     print(f"Train accuracy: {metrics['training_accuracy']}")
     print(f"Test accuracy: {metrics['test_accuracy']}")
     print(f"Valid accuracy: {metrics['valid_accuracy']}")
-
 
 if __name__ == "__main__":
     main()

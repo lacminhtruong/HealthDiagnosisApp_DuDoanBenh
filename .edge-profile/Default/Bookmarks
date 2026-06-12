@@ -1,0 +1,271 @@
+{
+   "checksum": "5d059cc8ff2af405d503400fdda88e8f",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13276013317965414",
+            "date_last_used": "13401115440589432",
+            "guid": "6990189c-d792-43ac-b171-41c4f06fb7d1",
+            "id": "22",
+            "name": "YouTube",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.youtube.com/",
+            "visit_count": 1
+         }, {
+            "date_added": "13173835986537088",
+            "date_last_used": "0",
+            "guid": "351f0768-2a71-43c7-b07e-b762a90b532e",
+            "id": "23",
+            "name": "MP3 từ YouTube về máy nhanh nhất",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://y2mate.com/vi",
+            "visit_count": 0
+         }, {
+            "date_added": "13261309332163765",
+            "date_last_used": "13401510364231322",
+            "guid": "0750e92a-29f5-4fcc-9cf0-89cf0733894e",
+            "id": "24",
+            "name": "YouTube",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://youtube.com/",
+            "visit_count": 1
+         }, {
+            "date_added": "13263235065627867",
+            "date_last_used": "0",
+            "guid": "49a2b89d-f569-4b6e-bf76-bea75b214cab",
+            "id": "25",
+            "name": "Quality HD wallpaper for any screen. Download wallpapers for iPhone and Android for free.",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://million-wallpapers.com/",
+            "visit_count": 0
+         }, {
+            "date_added": "13264088971676983",
+            "date_last_used": "0",
+            "guid": "9d4b01bc-c443-47eb-b377-f9da18b3d3da",
+            "id": "26",
+            "name": "WallpapersWide.com",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "http://wallpaperswide.com/",
+            "visit_count": 0
+         }, {
+            "date_added": "13425735840327506",
+            "date_last_used": "0",
+            "guid": "716a1510-ce4d-44f4-a721-65461737b3c8",
+            "id": "9",
+            "name": "ASUS Software Portal - Exclusive technology",
+            "show_icon": false,
+            "source": "oem_preload",
+            "type": "url",
+            "url": "https://www.asus.com/Software-and-Innovations-Portal/",
+            "visit_count": 0
+         }, {
+            "date_added": "13425735840326937",
+            "date_last_used": "0",
+            "guid": "130bc799-ea54-4c67-9b5f-d023219396af",
+            "id": "8",
+            "name": "MyASUS Software - Get the best from ASUS PC",
+            "show_icon": false,
+            "source": "oem_preload",
+            "type": "url",
+            "url": "https://www.asus.com/ASUS-Software/",
+            "visit_count": 0
+         }, {
+            "date_added": "13425735840325475",
+            "date_last_used": "0",
+            "guid": "943adf45-8862-4571-9290-5f87ccd4b03c",
+            "id": "7",
+            "name": "McAfee LiveSafe",
+            "show_icon": false,
+            "source": "oem_preload",
+            "type": "url",
+            "url": "https://home.mcafee.com/root/campaign.aspx?cid=247829",
+            "visit_count": 0
+         } ],
+         "date_added": "13425735840200983",
+         "date_last_used": "0",
+         "date_modified": "13425735840327506",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Favorites bar",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13425735840200983",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [ {
+            "date_added": "13196707145768268",
+            "date_last_used": "0",
+            "guid": "179099aa-0b41-4f9e-8097-b9633f6508f6",
+            "id": "10",
+            "name": "Tải nhạc MP3 từ YouTube",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://y2mate.com/vi/youtube-to-mp3/-0UsqjZV4sg",
+            "visit_count": 0
+         }, {
+            "date_added": "13238032418968545",
+            "date_last_used": "0",
+            "guid": "4897f67e-e423-4b09-8801-1374bfb58a81",
+            "id": "11",
+            "name": "Chuyển nhạc youtube sang mp3",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://x2convert.com/vi/download-youtube-to-mp3-music",
+            "visit_count": 0
+         }, {
+            "date_added": "13238117337193122",
+            "date_last_used": "0",
+            "guid": "06e153fc-59a5-4a28-9ac1-67a171da0a28",
+            "id": "12",
+            "name": "YouTube Converter & Downloader - Chuyển đổi video, tập tin âm thanh sang MP3, MP4, AVI và các định dạng khác",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://videomp3convert.com/download?videoId=https%3A%2F%2Fyoutu.be%2FXFdNe_4mxdEmp3&requestExt=mp3&videoResolution=-1&audioBitrate=0",
+            "visit_count": 0
+         }, {
+            "date_added": "13240101111795449",
+            "date_last_used": "0",
+            "guid": "4f5375c1-57b7-4feb-982a-0388965b8a4e",
+            "id": "13",
+            "name": "Tải video  youtube",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://x2convert.com/vi/LinkYoutube",
+            "visit_count": 0
+         }, {
+            "date_added": "13342055210706383",
+            "date_last_used": "0",
+            "guid": "20ef9fde-68aa-4237-a415-baaea793e70d",
+            "id": "14",
+            "name": "5 Cách làm sinh tố xoài đơn giản thơm ngon, bổ dưỡng",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://cellphones.com.vn/sforum/cach-lam-sinh-to-xoai",
+            "visit_count": 0
+         }, {
+            "date_added": "13358324460295030",
+            "date_last_used": "0",
+            "guid": "adc860b1-43e0-4bc0-b282-5fa58f37af44",
+            "id": "15",
+            "name": "Tải Video Facebook 1080p",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://fdownloader.net/vi#google_vignette",
+            "visit_count": 0
+         }, {
+            "date_added": "13378167666109974",
+            "date_last_used": "0",
+            "guid": "db6c2f75-bd50-471a-bac6-604e73f066e7",
+            "id": "16",
+            "name": "chọn size đồng hồ",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://hanaichi.vn/blog/cach-do-va-chon-size-dong-ho/",
+            "visit_count": 0
+         }, {
+            "date_added": "13378565922887122",
+            "date_last_used": "0",
+            "guid": "08a2c7b6-b93a-40d7-8254-7c002065c182",
+            "id": "17",
+            "name": "Tải video tiktok",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://snaptik.app/vn2",
+            "visit_count": 0
+         }, {
+            "date_added": "13383183781569629",
+            "date_last_used": "0",
+            "guid": "39548141-300b-494b-a3a5-71dce6fc0612",
+            "id": "18",
+            "name": "Spotify",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.spotify.com/vn-vi/account/overview/",
+            "visit_count": 0
+         }, {
+            "date_added": "13389546112463347",
+            "date_last_used": "0",
+            "guid": "35fb5832-4b3d-41ed-82c6-0caa414aa0d1",
+            "id": "19",
+            "name": "Linh kiện máy lọc nước đầy đủ giá tốt nhất thị trường",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://aqualife.com.vn/linh-kien-may-loc-nuoc/page/2/",
+            "visit_count": 0
+         }, {
+            "date_added": "13395966477144196",
+            "date_last_used": "0",
+            "guid": "53afb889-20ee-4e5e-845b-e4fcc46b3d6c",
+            "id": "20",
+            "name": "Gmail tung 'vũ khí' giúp dọn dẹp hộp thư nhanh gọn",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://thanhnien.vn/gmail-tung-vu-khi-giup-don-dep-hop-thu-nhanh-gon-185250701150402468.htm",
+            "visit_count": 0
+         }, {
+            "date_added": "13399269627304339",
+            "date_last_used": "0",
+            "guid": "20744384-f2b5-436b-b3bf-5c3dda3a25ff",
+            "id": "21",
+            "name": "Tải nhạc MP3 từ YouTube | y2mate.gg",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://vi.y2mate.gg/youtube-mp3/CMKaAwraOto",
+            "visit_count": 0
+         } ],
+         "date_added": "13425735840200983",
+         "date_last_used": "0",
+         "date_modified": "13399269627304339",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13425735840200983",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "Workspaces",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CkEKHgiIgQISCHTgerueAQAAKg4QABgBIAAoBjAAOABAABIAKhhNTW9kVXhxMFZNTkhJcXl5ak9jbUJnPT1IA6AGDBKOAQgFEokBChx3UkJyWkwrNlBBOWF2S2dqTlA3SlhETGNmdnM9EiQ4NjNiMTlkYS03ZGMwLTVhYjktYjAyOS0yNjI1ZTJjY2IxNTcYACAAKAAwvfuKxpEzOML8isaRM0DC/IrGkTNKHG5teDY1c1FEdnhJOFRnRWV2K0ErbnR0b1NuND1aAGUAAAAAwj4CYAASrQEIGRKoAQocWTdGWU12Vmh4UmJDQWU3aXpidnVOd2xYYXVnPRIkNDlhMmI4OWQtZjU2OS00YjZlLWJmNzYtYmVhNzViMjE0Y2FiGAAgACgAMKLqsMaRMzju8LDGkTNA7vCwxpEzShxsL21OaHFtTG80c1NVNHRBL0pMOXlzM0dWVTQ9Wh8iHdlmRXJWVEdsdDZXcWRkN3BZZFRabDdTdWlENXc9ZUEd+cDCPgJgBRKsAQgWEqcBChxMRFNMVm1kTGc3bjBPSldudS8xV08vL2lrNzA9EiQ2OTkwMTg5Yy1kNzkyLTQzYWMtYjE3MS00MWM0ZjA2ZmI3ZDEYACAAKAAwsOqwxpEzOPXzsMaRM0D187DGkTNKHHRucXB1b1FIeUlERW1HdktkMGswdy80TjNtdz1aHiIcNWg1dmhrSWI4VzU0cmlHQ2VXTnB6di9XWHg0PWVD+G2Awj4CYAUSjgEIARKJAQoceXhKLzZmdmtlY3I3a3A1RVF6QjR0V0xwZGJFPRIkOTZlMzBiMGUtMzlkNC01OTM3LWE2NzktNzRjZjVlNGExNzBkGAAgACgAMLOHvrrSLzi8uKKsgTBAvLiirIEwShxhUkNXTGdoRjliNUlucUtJRHZ1Si9qdlFrRmM9WgBlAAAAAMI+AmAAEq4BCBQSqQEKHFd1bHhxaWptbjYwamJmeXZmYlRwSWVTUlRNND0SJDUzYWZiODg5LTIwZWUtNGU1ZS04NDViLWU0ZmNjNDZiM2Q2YxgAIAAoADCx6rDGkTM4jfSwxpEzQI30sMaRM0ocOXBoelBzcS9KQ0FSNEhkRTFyS3V4aUVyS3h3PVogIh7/oTR2V0QzZ3NPNzh6VFNaVUZXTmZxMjl1dnJpdz1lIpqBL8I+AmAFEq4BCBUSqQEKHFlid1ZUT3E5cFkxZFN1Y3o3TjcyREtYTTg1RT0SJDIwNzQ0Mzg0LWYyYjUtNDM2Yi1iM2JmLTVjM2RkYTNhMjVmZhgAIAAoADCr6rDGkTM48vKwxpEzQPLysMaRM0oceTdLS2hObTFLWUpncjc0N3M2YlZ0cEFuSnE4PVogIh7/0Gd5RmN6VlFCazNhem9RTjVUcDgxQ09sdTYwTT1lrZAkUsI+AmAFEq0BCBMSqAEKHEZWb0NJekM5TWVhRFd3UEZGR3U3TXRCUEtJMD0SJDM1ZmI1ODMyLTRiM2QtNDFlZC04MmM2LTBjYWE0MTRhYTBkMRgAIAAoADCv6rDGkTM4zPOwxpEzQMzzsMaRM0ocTld6Y3pGREkwYjVkcndhZUNXR1h5c0lVbjQ0PVofIh3/Q3o2ME5wR0dXemc1QUphYTFkVWV4NSsvZ2lZPWUcyCIKwj4CYAUSrQEIGhKoAQocalo5cGJyQXQvQmtFNTNVVlVETExvVlRQa0FNPRIkOWQ0YjAxYmMtYzQ0My00N2ViLWIzNzctZjlkYTE4YjNkM2RhGAAgACgAMKnqsMaRMzjF8rDGkTNAxfKwxpEzShxXdFVQV2tvTzNOTDZVbkU1OEtma2lTWG5LbW89Wh8iHewrOS83M0tjZVJjdGZML09veFNVV3hhM09oRWc9ZeFcz3TCPgJgBRKtAQgSEqgBChxoRjV3Y09tYm1MZ0lQZ0puMk9OR3U3dEdJcVU9EiQzOTU0ODE0MS0zMDBiLTQ5NGItYTNhNS03MWRjZTZmYzA2MTIYACAAKAAwo+qwxpEzOKfxsMaRM0Cn8bDGkTNKHDJZVUVnTHdOK1ZqWndyZHlyWlRJc2JHNDlIbz1aHyId/zR3QkdQUXdpUDBzd3cza3BKbzdHREhKTW81ND1l9aRKxMI+AmAFEq0BCBESqAEKHE44aDN6MTJKeHZsYjBlcU9uTXFsTGg1S3RVVT0SJDA4YTJjN2I2LWI5M2EtNDBkNy04MjU0LTdjMDAyMDY1YzE4MhgAIAAoADCu6rDGkTM4tPOwxpEzQLTzsMaRM0ocRnBDTGJJd0JvL25KR0xkRUlPTDRacFhndk44PVofIh3+NktmUDJpeHh3anp0azlzbDFvTm5Iby8rdDhNPWXYbyIBwj4CYAUSrQEIDhKoAQocNG9jM3duSEZ5Ny94TkxHWWtpRC9qTmowNXVNPRIkMjBlZjlmZGUtNjhhYS00MjM3LWE0MTUtYmFhZWE3OTNlNzBkGAAgACgAMKbqsMaRMzj48bDGkTNA+PGwxpEzShxUL0VMVnJ6dndMZDdiZ3pOZ3NWcUljV1F4L009Wh8iHfVscVlHNERXWmRrVld5UUZhQzJJZHlMbmZOZW89ZYnF9LzCPgJgBRKtAQgNEqgBChwvRDJXd2cvTEtKVG8vR1hVT3ViY3Zxc05rWVE9EiQ0ZjUzNzVjMS01N2I3LTRmZWItOTgyYS0wMzg4OTY1YjhhNGUYACAAKAAwquqwxpEzONzysMaRM0Dc8rDGkTNKHEl3L3FLUS9qdkd3VmhLOUdITEFrUTZzRWNqVT1aHyId6jhNL2lUbUU3em1hVDd2VWdFclBRVFB5akdkaz1ldPiY1sI+AmAFEq0BCBgSqAEKHHJKeW9xSGsxZTdPdG8xdWNHaEpvWStsYmZ3QT0SJDA3NTBlOTJhLTI5ZjUtNGZjYy05Y2YwLTg5Y2YwNzMzODk0ZRgAIAAoADCh6rDGkTM41PCwxpEzQNTwsMaRM0ocK3BEMHQ1c3NuV0tCa29naVc3K1ZSM1NETTVRPVofIh2yRlc2T2tGSFZmTElCQVkvOVFkRUtoQ2xIMTRRPWVD+G2Awj4CYAUSjgEIAhKJAQocWWNTVG9udkVTUHdxQ3M0TDJjclZodjY4TDk4PRIkMjhmOGQwOGEtODA4Ni01N2IyLTk2YTktNGE2OWQ0MTZiZTJjGAAgACgAMLOHvrrSLzj+t6KsgTBA/reirIEwShxvUFZraHdCUmJWNjVLQ1dSMitJT05IV29PdTg9WgBlAAAAAMI+AmAAEq0BCA8SqAEKHFNJNEVWVm5VZ1Z5OUxHTGRHSmpERU11THliYz0SJGFkYzg2MGIxLTQzZTAtNGJjMC1iMjgyLTVmYTU4ZjM3YWY0NBgAIAAoADCo6rDGkTM4rPKwxpEzQKzysMaRM0ocWXF3cXhMTWJvWFNjcDNFRkEwdWdUZlNFOFZrPVofIh36ZVhDY21yb2RjWkc5bGNjcXhBaDdHRWpQMmprPWWTxkOYwj4CYAUSrAEIFxKnAQocUU5zOGlkZDJSWnJ6UGN2aCtseFZnZFp0Q3RJPRIkMzUxZjA3NjgtMmE3MS00M2M3LWIwN2UtYjc2MmE5MGI1MzJlGAAgACgAMKTqsMaRMzjE8bDGkTNAxPGwxpEzShxWUTdtQ1BON1hlM0ZQTE11VFRWNHNRNDZpa289Wh4iHGVIenF0K1RMbk9NbTdXbU42RndKRzB6aGttUT1lrZAkUsI+AmAFEqwBCAoSpwEKHFo4S1Bab291Yzc3UXcvbXVzVkdYTUxEVDUrQT0SJDE3OTA5OWFhLTBiNDEtNGY5ZS04MDk3LWI5NjMzZjY1MDhmNhgAIAAoADCn6rDGkTM4lfKwxpEzQJXysMaRM0ocalc4N2ZTODhjOEEvRlBCMzRlL0NzRkpUa0pRPVoeIhxXOW5pWFJMNEVwMnlId2k4NVpFMEs4LzQzTlk9Za2QJFLCPgJgBRKtAQgMEqgBChx6N25vY08ybDBPSEpaRExpT0NJK2lYSGNSQzg9EiQwNmUxNTNmYy01OWE1LTRhMjgtOWFjMS02N2ExNzFkYTBhMjgYACAAKAAwpeqwxpEzON/xsMaRM0Df8bDGkTNKHHk4dlJQbmZ6cmxzUzI2MEpKRkZUUExuMXJIST1aHyId1UdLUjVUTVN4S0pZZnB1MFR2MTFGTGp2VENaTT1l9ZEL18I+AmAFEq0BCAsSqAEKHEdsbDVCVHJGQk5VYmwwRmlUcXRzSEU5bWo3RT0SJDQ4OTdmNjdlLWU0MjMtNGIwOS04ODAxLTEzNzRiZmI1OGE4MRgAIAAoADCt6rDGkTM4nfOwxpEzQJ3zsMaRM0occlBQZDYzTTJjSEVVYkdseXdnZ3p5MlRYUXZZPVofIh2rUVFkcGZ4NXBnamorWkV5bTBUeFY3QTRHc053PWV0+JjWwj4CYAUSrQEIEBKoAQocaVZBdndpdDdlSHJRTkk4U1pSTDdOcVRmSGpzPRIkZGI2YzJmNzUtYmQ1MC00NzFhLWJhYzYtNjA0ZTczZjA2NmU3GAAgACgAMKzqsMaRMziI87DGkTNAiPOwxpEzShxEelpGdkxFYmxEUXZXZUpTQkpUdUFpMmY5Mk09Wh8iHf1pZ2hXdXBuRjhRSUJoWmF0ek16akxOU1dxWFk9ZfHTmHHCPgJgBRKOAQgDEokBChxuamdEdTg4ZUNydlhwODZwRDdmSEdjcUZwODg9EiQzYzg1N2UyYi1hNzFkLTUyNjMtOWYyMC03YmM1Njk4YmUxMWEYACAAKAAws4e+utIvOJ24oqyBMECduKKsgTBKHHl6TkIwMWNuNTRBN2NSVTB1VCsvUGdtVHRVbz1aAGUAAAAAwj4CYAAwADgA",
+   "version": 1
+}

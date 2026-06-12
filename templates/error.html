@@ -1,13 +1,15 @@
 {% extends "layout.html" %}
 
-{% block title %}Lỗi{% endblock %}
+{% block title %}Có lỗi xảy ra · HealthDiagnosis{% endblock %}
 
 {% block content %}
-<section class="hero-strip">
-    <div class="section-heading">
-        <p class="eyebrow">Lỗi</p>
+<section class="error-page page-shell">
+    <div class="error-card">
+        <span>!</span>
+        <p class="eyebrow"><i></i>Không thể tiếp tục</p>
         <h1>{{ message }}</h1>
+        <p>Hãy quay lại trang chẩn đoán và thử lại.</p>
+        <a class="secondary-button" href="{{ url_for('index') }}">Quay lại chẩn đoán</a>
     </div>
-    <a class="secondary-button" href="{{ url_for('index') }}">Quay lại</a>
 </section>
 {% endblock %}

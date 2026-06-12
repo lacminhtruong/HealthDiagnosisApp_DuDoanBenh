@@ -117,7 +117,17 @@ class TrainedModelDiagnosisService:
         values: list[float] = []
 
         for column in self.feature_columns:
-            if column == "height_scaled":
+            if column == "age_scaled":
+                values.append(self._min_max_scale("age", patient.age))
+            elif column == "gender_encoded":
+                values.append(self._encode_gender(patient.gender))
+            elif column == "height_cm_scaled":
+                values.append(self._min_max_scale("height_cm", patient.height_cm))
+            elif column == "weight_kg_scaled":
+                values.append(self._min_max_scale("weight_kg", patient.weight_kg))
+            elif column == "bmi_scaled":
+                values.append(self._min_max_scale("bmi", patient.bmi))
+            elif column == "height_scaled":
                 values.append(patient.height_cm / self.normalization["height_cm_divisor"])
             elif column == "weight_scaled":
                 values.append(patient.weight_kg / self.normalization["weight_kg_divisor"])
@@ -130,6 +140,25 @@ class TrainedModelDiagnosisService:
                 values.append(0.0)
 
         return torch.tensor([values], dtype=torch.float32)
+
+    def _min_max_scale(self, field_name: str, value: float) -> float:
+        minimum = self.normalization[f"{field_name}_min"]
+        maximum = self.normalization[f"{field_name}_max"]
+        if value <= 0:
+            value = self.normalization.get(f"{field_name}_default", (minimum + maximum) / 2)
+        if maximum == minimum:
+            return 0.0
+        scaled = (value - minimum) / (maximum - minimum)
+        return min(max(scaled, 0.0), 1.0)
+
+    @staticmethod
+    def _encode_gender(gender: str) -> float:
+        normalized = normalize_text(gender)
+        if normalized in {"nữ", "nu", "female", "f", "1"}:
+            return 1.0
+        if normalized in {"nam", "male", "m", "0"}:
+            return 0.0
+        return 0.5
 
     def _choose_label(self, neighbor_labels: torch.Tensor, neighbor_distances: torch.Tensor) -> int:
         label_votes = Counter(neighbor_labels.tolist())

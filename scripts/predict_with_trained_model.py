@@ -16,6 +16,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--age", type=int, required=True)
+    parser.add_argument("--gender", choices=["Nam", "Nữ"], required=True)
     parser.add_argument("--height-cm", type=float, required=True)
     parser.add_argument("--weight-kg", type=float, required=True)
     parser.add_argument("--symptoms", nargs="+", required=True)
@@ -25,6 +27,8 @@ def main() -> None:
     result = service.predict(
         Patient(
             symptoms=args.symptoms,
+            age=args.age,
+            gender=args.gender,
             height_cm=args.height_cm,
             weight_kg=args.weight_kg,
         )

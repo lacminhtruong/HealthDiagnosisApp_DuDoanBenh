@@ -33,6 +33,13 @@ def parse_float(value: str | None, default: float = 0.0) -> float:
         return default
 
 
+def parse_int(value: str | None, default: int = 0) -> int:
+    try:
+        return int(value or default)
+    except ValueError:
+        return default
+
+
 def normalize_for_grouping(value: str) -> str:
     return unicodedata.normalize("NFC", value).casefold()
 
@@ -59,6 +66,8 @@ def group_symptoms_by_body_system(symptoms: list[str]) -> list[dict[str, object]
 
 def build_index_context(
     selected_symptoms: list[str] | None = None,
+    age: str = "",
+    gender: str = "",
     height_cm: str = "",
     weight_kg: str = "",
     errors: list[str] | None = None,
@@ -68,6 +77,8 @@ def build_index_context(
         "symptoms": symptoms,
         "symptom_groups": group_symptoms_by_body_system(symptoms),
         "selected_symptoms": selected_symptoms or [],
+        "age": age,
+        "gender": gender,
         "height_cm": height_cm,
         "weight_kg": weight_kg,
         "errors": errors or [],
@@ -82,12 +93,18 @@ def index():
 @app.post("/ket-qua")
 def ket_qua():
     selected_symptoms = request.form.getlist("symptoms")
+    age = parse_int(request.form.get("age"))
+    gender = request.form.get("gender", "").strip()
     height_cm = parse_float(request.form.get("height_cm"))
     weight_kg = parse_float(request.form.get("weight_kg"))
 
     errors: list[str] = []
     if not selected_symptoms:
         errors.append("Vui lòng chọn ít nhất một triệu chứng.")
+    if age < 1 or age > 100:
+        errors.append("Tuổi phải nằm trong khoảng từ 1 đến 100.")
+    if gender not in {"Nam", "Nữ"}:
+        errors.append("Vui lòng chọn giới tính.")
     if height_cm <= 0:
         errors.append("Chiều cao phải lớn hơn 0 cm.")
     if weight_kg <= 0:
@@ -98,6 +115,8 @@ def ket_qua():
             "index.html",
             **build_index_context(
                 selected_symptoms=selected_symptoms,
+                age=request.form.get("age", ""),
+                gender=gender,
                 height_cm=request.form.get("height_cm", ""),
                 weight_kg=request.form.get("weight_kg", ""),
                 errors=errors,
@@ -106,6 +125,8 @@ def ket_qua():
 
     patient = Patient(
         symptoms=selected_symptoms,
+        age=age,
+        gender=gender,
         height_cm=height_cm,
         weight_kg=weight_kg,
     )

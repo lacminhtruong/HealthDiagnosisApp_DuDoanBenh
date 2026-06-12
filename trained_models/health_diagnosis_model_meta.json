@@ -1,9 +1,9 @@
 {
-  "model_path": "D:\\ADMIN\\Downloads\\Báo cáo lần 1 - nhóm 12\\Báo cáo lần 1 - nhóm 12\\HealthDiagnosisApp\\HealthDiagnosisApp\\HealthDiagnosisApp\\trained_models\\health_diagnosis_model.pt",
-  "dataset_path": "D:\\ADMIN\\Downloads\\Báo cáo lần 1 - nhóm 12\\Báo cáo lần 1 - nhóm 12\\HealthDiagnosisApp\\HealthDiagnosisApp\\HealthDiagnosisApp\\datasets\\massive_health_training_data.xlsx",
+  "model_path": "D:\\ADMIN\\Desktop\\HealthDiagnosisApp\\trained_models\\health_diagnosis_model.pt",
+  "dataset_path": "D:\\ADMIN\\Desktop\\HealthDiagnosisApp\\datasets\\massive_health_training_data_v2.xlsx",
   "algorithm": "KNN",
   "k": 5,
-  "features": 182,
+  "features": 184,
   "classes": 50,
   "metrics": {
     "algorithm": "KNN",
@@ -13,9 +13,9 @@
     "training_rows": 2428,
     "test_rows": 683,
     "valid_rows": 389,
-    "training_accuracy": 0.9856,
-    "test_accuracy": 0.9663,
-    "valid_accuracy": 0.9666,
+    "training_accuracy": 0.9872,
+    "test_accuracy": 0.9546,
+    "valid_accuracy": 0.9692,
     "split_ratio": {
       "train": 0.7,
       "test": 0.2,
@@ -73,5 +73,19 @@
     "Bệnh mạch vành": 47,
     "Sỏi mật": 48,
     "Thủy đậu": 49
+  },
+  "normalization": {
+    "age_min": 1.0,
+    "age_max": 84.0,
+    "age_default": 43.60971428571428,
+    "height_cm_min": 150.0,
+    "height_cm_max": 185.0,
+    "height_cm_default": 167.35828571428573,
+    "weight_kg_min": 45.0,
+    "weight_kg_max": 90.0,
+    "weight_kg_default": 67.53257142857143,
+    "bmi_min": 13.1483,
+    "bmi_max": 40.0,
+    "bmi_default": 24.36238557142857
   }
 }

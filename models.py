@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 @dataclass
 class Patient:
     symptoms: list[str] = field(default_factory=list)
+    age: int = 0         # <-- THÊM DÒNG NÀY
+    gender: str = ""     # <-- THÊM DÒNG NÀY
     height_cm: float = 0.0
     weight_kg: float = 0.0
 

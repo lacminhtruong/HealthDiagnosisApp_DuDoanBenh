@@ -69,5 +69,5 @@ uv run python scripts/train_model.py --dataset datasets/massive_health_training_
 Chạy thử nhận diện bằng KNN artifact:
 
 ```powershell
-uv run python scripts/predict_with_trained_model.py --height-cm 153 --weight-kg 56 --symptoms "Khó thở mãn tính" "Thở khò khè" "Tức ngực"
+uv run python scripts/predict_with_trained_model.py --age 65 --gender Nam --height-cm 153 --weight-kg 56 --symptoms "Khó thở mãn tính" "Thở khò khè" "Tức ngực"
 ```

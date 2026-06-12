@@ -1,13 +1,15 @@
 function normalizeText(value) {
     return String(value || "")
         .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "")
+        .replace(/[\u0300-\u036f]/g, "")
         .toLocaleLowerCase("vi")
         .trim();
 }
 
 function setupSymptomSearch() {
     const searchInput = document.getElementById("symptom-search");
+    const resultCount = document.getElementById("search-result-count");
+    const emptyState = document.getElementById("search-empty");
     const groups = [...document.querySelectorAll("[data-symptom-group]")];
 
     if (!searchInput || !groups.length) {
@@ -16,6 +18,7 @@ function setupSymptomSearch() {
 
     const filterSymptoms = () => {
         const query = normalizeText(searchInput.value);
+        let totalVisible = 0;
 
         groups.forEach((group) => {
             const options = [...group.querySelectorAll("[data-symptom-option]")];
@@ -27,24 +30,41 @@ function setupSymptomSearch() {
                 option.hidden = !isVisible;
                 if (isVisible) {
                     visibleCount += 1;
+                    totalVisible += 1;
                 }
             });
 
             group.hidden = Boolean(query) && visibleCount === 0;
         });
+
+        if (resultCount) {
+            resultCount.textContent = `${totalVisible} kết quả`;
+        }
+        if (emptyState) {
+            emptyState.hidden = totalVisible > 0;
+        }
     };
 
     searchInput.addEventListener("input", filterSymptoms);
+    document.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+            event.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+    });
     filterSymptoms();
 }
 
 function syncPatientPreview() {
     const checkboxes = [...document.querySelectorAll("input[name='symptoms']")];
     const selectedCount = document.getElementById("selected-count");
+    const selectedCountSide = document.getElementById("selected-count-side");
     const selectedList = document.getElementById("selected-symptom-list");
     const heightInput = document.getElementById("height-input");
     const weightInput = document.getElementById("weight-input");
     const bmiPreview = document.getElementById("bmi-preview");
+    const bmiLabel = document.getElementById("bmi-label");
 
     if (!checkboxes.length) {
         return;
@@ -57,6 +77,9 @@ function syncPatientPreview() {
 
         if (selectedCount) {
             selectedCount.textContent = selected.length;
+        }
+        if (selectedCountSide) {
+            selectedCountSide.textContent = selected.length;
         }
 
         if (!selectedList) {
@@ -88,12 +111,26 @@ function syncPatientPreview() {
         const weight = Number(weightInput.value);
         if (height <= 0 || weight <= 0) {
             bmiPreview.textContent = "--";
+            if (bmiLabel) {
+                bmiLabel.textContent = "Nhập chiều cao và cân nặng";
+            }
             return;
         }
 
         const heightInMeters = height / 100;
         const bmi = weight / (heightInMeters * heightInMeters);
         bmiPreview.textContent = bmi.toFixed(2);
+        if (bmiLabel) {
+            if (bmi < 18.5) {
+                bmiLabel.textContent = "Mức cân nặng thấp";
+            } else if (bmi < 25) {
+                bmiLabel.textContent = "Trong ngưỡng cân đối";
+            } else if (bmi < 30) {
+                bmiLabel.textContent = "Mức thừa cân";
+            } else {
+                bmiLabel.textContent = "Mức BMI cao";
+            }
+        }
     };
 
     checkboxes.forEach((checkbox) => checkbox.addEventListener("change", updateSymptoms));
@@ -136,7 +173,7 @@ function drawNeighborChart() {
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, cssWidth, cssHeight);
 
-    const colors = ["#0f766e", "#2563eb", "#d97706", "#e11d48", "#7c3aed", "#0891b2"];
+    const colors = ["#0d9488", "#3b82f6", "#d28a2e", "#d95f75", "#7760c9", "#2588a8"];
     const total = entries.reduce((sum, [, percentage]) => sum + percentage, 0);
     const maxEntry = entries.reduce((best, entry) => (entry[1] > best[1] ? entry : best), entries[0]);
 
@@ -162,12 +199,12 @@ function drawNeighborChart() {
     context.fillStyle = "#ffffff";
     context.fill();
 
-    context.fillStyle = "#0f766e";
+    context.fillStyle = "#0d9488";
     context.font = "800 28px Segoe UI, Arial";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(`${maxEntry[1]}%`, centerX, centerY - 7);
-    context.fillStyle = "#64748b";
+    context.fillStyle = "#6a7f8e";
     context.font = "800 12px Segoe UI, Arial";
     context.fillText("cao nhất", centerX, centerY + 22);
 
@@ -183,13 +220,13 @@ function drawNeighborChart() {
         roundRect(context, legendX, y - 11, 12, 12, 4);
         context.fill();
 
-        context.fillStyle = "#0f172a";
+        context.fillStyle = "#102536";
         context.font = "800 13px Segoe UI, Arial";
         context.textAlign = "left";
         context.textBaseline = "middle";
         context.fillText(trimText(context, label, Math.max(80, legendWidth - 58)), legendX + 22, y - 5);
 
-        context.fillStyle = "#0f766e";
+        context.fillStyle = "#0d9488";
         context.textAlign = "right";
         context.fillText(`${percentage}%`, legendX + legendWidth, y - 5);
     });

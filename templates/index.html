@@ -1,24 +1,83 @@
 {% extends "layout.html" %}
 
-{% block title %}Chẩn đoán bằng KNN{% endblock %}
+{% block title %}Chẩn đoán thông minh · HealthDiagnosis{% endblock %}
 
 {% block content %}
-<section class="page-hero">
-    <div class="page-shell hero-inner">
-        <div>
-            <p class="eyebrow">KNN Model</p>
-            <h1>Chẩn đoán bệnh bằng thuật toán KNN</h1>
-            <p class="hero-subtitle">Chọn triệu chứng phù hợp để nhận kết quả chẩn đoán</p>
+<section class="diagnosis-hero">
+    <div class="hero-orb hero-orb-one"></div>
+    <div class="hero-orb hero-orb-two"></div>
+    <div class="page-shell hero-grid">
+        <div class="hero-copy">
+            <p class="eyebrow eyebrow-light">
+                <span></span>
+                Hệ thống hỗ trợ chẩn đoán KNN
+            </p>
+            <h1>Hiểu cơ thể bạn,<br><em>sớm hơn một bước.</em></h1>
+            <p class="hero-subtitle">Phân tích triệu chứng cùng tuổi, giới tính và chỉ số cơ thể để tìm các mẫu bệnh gần nhất trong dữ liệu huấn luyện.</p>
+            <div class="hero-trust-row">
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg>
+                    3.500 hồ sơ huấn luyện
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+                    Dữ liệu được xử lý riêng tư
+                </span>
+            </div>
         </div>
-        <div class="hero-stats">
-            <div>
-                <span>Triệu chứng</span>
-                <strong>{{ symptoms | length }}</strong>
+
+        <div class="hero-insight-card">
+            <div class="insight-glow"></div>
+            <div class="insight-topline">
+                <span class="pulse-dot"></span>
+                <span>Phân tích đang sẵn sàng</span>
+                <strong>KNN</strong>
             </div>
-            <div>
-                <span>Nhóm cơ thể</span>
-                <strong>{{ symptom_groups | length }}</strong>
+            <div class="insight-visual" aria-hidden="true">
+                <svg viewBox="0 0 420 150" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="line-gradient" x1="0" x2="1">
+                            <stop offset="0" stop-color="#2dd4bf"/>
+                            <stop offset="1" stop-color="#60a5fa"/>
+                        </linearGradient>
+                        <linearGradient id="area-gradient" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0" stop-color="#2dd4bf" stop-opacity=".28"/>
+                            <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="chart-area" d="M0 130 C55 124 65 72 118 88 S185 116 220 66 S290 28 320 62 S370 95 420 25 V150 H0 Z"/>
+                    <path class="chart-line" d="M0 130 C55 124 65 72 118 88 S185 116 220 66 S290 28 320 62 S370 95 420 25"/>
+                </svg>
+                <div class="insight-score">
+                    <span>Đặc trưng</span>
+                    <strong>184</strong>
+                    <small>được phân tích</small>
+                </div>
             </div>
+            <div class="insight-metrics">
+                <div><span>Nhóm bệnh</span><strong>50</strong></div>
+                <div><span>Triệu chứng</span><strong>{{ symptoms | length }}</strong></div>
+                <div><span>Độ chính xác valid</span><strong>96.9%</strong></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-shell workflow-wrap">
+    <div class="workflow-strip">
+        <div class="workflow-step is-active">
+            <strong>01</strong>
+            <span><b>Hồ sơ cơ thể</b><small>Tuổi và chỉ số cá nhân</small></span>
+        </div>
+        <i></i>
+        <div class="workflow-step is-active">
+            <strong>02</strong>
+            <span><b>Chọn triệu chứng</b><small>Mô tả tình trạng hiện tại</small></span>
+        </div>
+        <i></i>
+        <div class="workflow-step">
+            <strong>03</strong>
+            <span><b>Nhận phân tích</b><small>So khớp bằng mô hình KNN</small></span>
         </div>
     </div>
 </section>
@@ -26,104 +85,148 @@
 <section class="page-shell page-content">
     {% if errors %}
         <div class="notice notice-error" role="alert">
-            {% for error in errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
+            <span class="notice-icon">!</span>
+            <div>
+                <strong>Vui lòng kiểm tra lại thông tin</strong>
+                {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
         </div>
     {% endif %}
 
     <form class="diagnosis-form" action="{{ url_for('ket_qua') }}" method="post">
         <div class="symptom-column">
-            <div class="search-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                </svg>
-                <input id="symptom-search" type="search" placeholder="Tìm kiếm triệu chứng...">
+            <div class="section-intro">
+                <div>
+                    <p class="eyebrow"><span></span>Bước 2</p>
+                    <h2>Hôm nay bạn cảm thấy thế nào?</h2>
+                    <p>Chọn tất cả triệu chứng phù hợp để tăng độ chính xác của kết quả.</p>
+                </div>
+                <div class="selected-counter">
+                    <strong id="selected-count">{{ selected_symptoms | length }}</strong>
+                    <span>đã chọn</span>
+                </div>
             </div>
 
-            {% for group in symptom_groups %}
-                <fieldset class="symptom-group-card group-tone-{{ loop.index0 % 6 }}" data-symptom-group>
-                    <legend>
-                        <span class="group-dot"></span>
-                        <strong>{{ group.name }}</strong>
-                        <small>{{ group.symptoms | length }} triệu chứng</small>
-                    </legend>
-                    <div class="symptom-grid">
-                        {% for symptom in group.symptoms %}
-                            <label class="symptom-option" data-symptom-option data-symptom-name="{{ symptom | lower }}">
-                                <input
-                                    type="checkbox"
-                                    name="symptoms"
-                                    value="{{ symptom }}"
-                                    {% if symptom in selected_symptoms %}checked{% endif %}
-                                >
-                                <span class="fake-check" aria-hidden="true"></span>
-                                <span class="symptom-name">{{ symptom }}</span>
-                            </label>
-                        {% endfor %}
-                    </div>
-                </fieldset>
-            {% endfor %}
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m20 20-4-4"/>
+                </svg>
+                <input id="symptom-search" type="search" placeholder="Tìm nhanh triệu chứng, ví dụ: đau đầu, khó thở...">
+                <span class="search-result-count" id="search-result-count">{{ symptoms | length }} kết quả</span>
+            </div>
+
+            <div class="search-empty" id="search-empty" hidden>
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                </span>
+                <strong>Không tìm thấy triệu chứng phù hợp</strong>
+                <p>Thử một từ khóa ngắn hơn như “đau”, “ho” hoặc “sốt”.</p>
+            </div>
+
+            <div class="symptom-groups">
+                {% for group in symptom_groups %}
+                    <fieldset class="symptom-group-card group-tone-{{ loop.index0 % 6 }}" data-symptom-group>
+                        <legend>
+                            <span class="group-icon"><i></i></span>
+                            <span class="legend-copy">
+                                <strong>{{ group.name }}</strong>
+                                <small>{{ group.symptoms | length }} triệu chứng</small>
+                            </span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                        </legend>
+                        <div class="symptom-grid">
+                            {% for symptom in group.symptoms %}
+                                <label class="symptom-option" data-symptom-option data-symptom-name="{{ symptom | lower }}">
+                                    <input
+                                        type="checkbox"
+                                        name="symptoms"
+                                        value="{{ symptom }}"
+                                        {% if symptom in selected_symptoms %}checked{% endif %}
+                                    >
+                                    <span class="fake-check" aria-hidden="true"></span>
+                                    <span class="symptom-name">{{ symptom }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                {% endfor %}
+            </div>
         </div>
 
         <aside class="diagnosis-sidebar">
-            <section class="sidebar-card">
-                <header>
-                    <h2>Thông tin cơ thể</h2>
-                </header>
-                <div class="sidebar-body">
+            <section class="profile-card">
+                <div class="profile-card-header">
+                    <span class="profile-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    </span>
+                    <div>
+                        <p>Bước 1</p>
+                        <h2>Hồ sơ cơ thể</h2>
+                    </div>
+                    <span class="required-pill">Bắt buộc</span>
+                </div>
+
+                <div class="profile-fields">
                     <label class="field">
-                        <span>Chiều cao</span>
-                        <div class="input-with-unit">
-                            <input
-                                id="height-input"
-                                type="number"
-                                name="height_cm"
-                                min="1"
-                                step="0.1"
-                                value="{{ height_cm }}"
-                                placeholder="170"
-                                required
-                            >
-                            <small>cm</small>
+                        <span>Tuổi</span>
+                        <div class="input-shell">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                            <input type="number" name="age" min="1" max="100" step="1" value="{{ age }}" placeholder="30" required>
+                            <small>tuổi</small>
                         </div>
                     </label>
 
                     <label class="field">
-                        <span>Cân nặng</span>
-                        <div class="input-with-unit">
-                            <input
-                                id="weight-input"
-                                type="number"
-                                name="weight_kg"
-                                min="1"
-                                step="0.1"
-                                value="{{ weight_kg }}"
-                                placeholder="65"
-                                required
-                            >
-                            <small>kg</small>
+                        <span>Giới tính</span>
+                        <div class="input-shell select-shell">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+                            <select name="gender" required>
+                                <option value="" {% if not gender %}selected{% endif %} disabled>Chọn</option>
+                                <option value="Nam" {% if gender == "Nam" %}selected{% endif %}>Nam</option>
+                                <option value="Nữ" {% if gender == "Nữ" %}selected{% endif %}>Nữ</option>
+                            </select>
                         </div>
                     </label>
+
+                    <div class="field-pair">
+                        <label class="field">
+                            <span>Chiều cao</span>
+                            <div class="input-shell">
+                                <input id="height-input" type="number" name="height_cm" min="1" step="0.1" value="{{ height_cm }}" placeholder="170" required>
+                                <small>cm</small>
+                            </div>
+                        </label>
+                        <label class="field">
+                            <span>Cân nặng</span>
+                            <div class="input-shell">
+                                <input id="weight-input" type="number" name="weight_kg" min="1" step="0.1" value="{{ weight_kg }}" placeholder="65" required>
+                                <small>kg</small>
+                            </div>
+                        </label>
+                    </div>
 
                     <div class="bmi-card">
-                        <span>BMI</span>
-                        <strong id="bmi-preview">--</strong>
+                        <span class="bmi-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10a7 7 0 0 1 14 0v10"/><path d="M12 10l3-3"/><path d="M8 20h8"/></svg>
+                        </span>
+                        <span><small>Chỉ số BMI dự kiến</small><strong id="bmi-preview">--</strong></span>
+                        <em id="bmi-label">Nhập chiều cao và cân nặng</em>
                     </div>
                 </div>
             </section>
 
-            <section class="sidebar-card">
-                <header class="selected-header">
-                    <h2>Triệu chứng đã chọn</h2>
-                    <strong id="selected-count">{{ selected_symptoms | length }}</strong>
+            <section class="selected-card">
+                <header>
+                    <div>
+                        <p>Tóm tắt lựa chọn</p>
+                        <h3>Triệu chứng đã chọn</h3>
+                    </div>
+                    <strong id="selected-count-side">{{ selected_symptoms | length }}</strong>
                 </header>
                 <div class="selected-list" id="selected-symptom-list">
                     {% if selected_symptoms %}
-                        {% for symptom in selected_symptoms %}
-                            <span>{{ symptom }}</span>
-                        {% endfor %}
+                        {% for symptom in selected_symptoms %}<span>{{ symptom }}</span>{% endfor %}
                     {% else %}
                         <span class="muted-chip">Chưa chọn triệu chứng nào</span>
                     {% endif %}
@@ -131,14 +234,16 @@
             </section>
 
             <button class="primary-button" type="submit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                </svg>
-                Chẩn đoán bằng KNN
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="m9 18 6-6-6-6"/>
-                </svg>
+                <span>
+                    <small>Bước 3</small>
+                    Phân tích bằng KNN
+                </span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
             </button>
+            <p class="privacy-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Thông tin chỉ được dùng để tính toán kết quả trong phiên hiện tại.
+            </p>
         </aside>
     </form>
 </section>

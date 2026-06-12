@@ -1,44 +1,53 @@
 {% extends "layout.html" %}
 
-{% block title %}Kết quả chẩn đoán{% endblock %}
+{% block title %}Kết quả phân tích · HealthDiagnosis{% endblock %}
 
 {% block content %}
-<section class="page-hero">
-    <div class="page-shell result-hero-inner">
-        <div>
-            <p class="eyebrow">Kết quả từ KNN model .pt</p>
-            <h1>
-                <span class="result-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="6"/>
-                        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
-                    </svg>
-                </span>
-                {{ result.predicted_disease }}
-            </h1>
+<section class="result-hero">
+    <div class="result-orb"></div>
+    <div class="page-shell result-hero-grid">
+        <div class="result-copy">
+            <a class="back-link" href="{{ url_for('index') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Thực hiện chẩn đoán mới
+            </a>
+            <p class="eyebrow eyebrow-light"><span></span>Kết quả phân tích KNN</p>
+            <h1>{{ result.predicted_disease }}</h1>
+            <p>Mô hình đã đối chiếu hồ sơ của bạn với {{ result.metrics.training_rows }} mẫu huấn luyện và tìm ra các láng giềng gần nhất.</p>
+            <div class="result-profile-row">
+                <span><b>{{ patient.age }}</b> tuổi</span>
+                <span><b>{{ patient.gender }}</b></span>
+                <span><b>{{ "%.1f"|format(patient.bmi) }}</b> BMI</span>
+                <span><b>{{ patient.symptoms | length }}</b> triệu chứng</span>
+            </div>
         </div>
-        <div class="result-stats">
-            <div>
-                <span>Tỷ lệ phiếu</span>
-                <strong>{{ result.confidence_percent }}%</strong>
+
+        <div class="confidence-card">
+            <div class="confidence-ring" style="--score: {{ result.confidence_percent }};">
+                <div><strong>{{ result.confidence_percent }}%</strong><span>độ đồng thuận</span></div>
             </div>
-            <div>
-                <span>BMI</span>
-                <strong>{{ "%.2f"|format(patient.bmi) }}</strong>
-            </div>
-            <div>
-                <span>Triệu chứng</span>
-                <strong>{{ patient.symptoms | length }}</strong>
+            <div class="confidence-copy">
+                <span class="status-pill">Kết quả hàng đầu</span>
+                <p>{{ result.k }} láng giềng gần nhất đã tham gia bỏ phiếu.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="page-shell page-content result-content">
-    <div class="result-grid">
-        <section class="result-card">
-            <header>
-                <h2>Tỷ lệ phiếu KNN</h2>
+<section class="page-shell result-content">
+    <div class="clinical-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <div><strong>Lưu ý quan trọng</strong><p>Đây là kết quả hỗ trợ từ dữ liệu và không thay thế thăm khám hoặc chẩn đoán chuyên môn.</p></div>
+    </div>
+
+    <div class="result-grid result-grid-primary">
+        <section class="result-card vote-card">
+            <header class="card-heading">
+                <div>
+                    <p>Phân bố kết quả</p>
+                    <h2>Tỷ lệ phiếu KNN</h2>
+                </div>
+                <span>{{ result.k }} phiếu</span>
             </header>
             <div class="vote-list">
                 {% for disease, percentage in result.disease_percentages.items() %}
@@ -47,73 +56,55 @@
                             <span>{{ disease }}</span>
                             <strong>{{ percentage }}%</strong>
                         </div>
-                        <div class="vote-track" aria-hidden="true">
-                            <span style="width: {{ percentage }}%"></span>
-                        </div>
+                        <div class="vote-track" aria-hidden="true"><span style="width: {{ percentage }}%"></span></div>
                     </div>
                 {% endfor %}
             </div>
         </section>
 
-        <section class="result-card">
-            <header>
-                <h2>Biểu đồ phiếu bầu</h2>
+        <section class="result-card chart-card">
+            <header class="card-heading">
+                <div>
+                    <p>Trực quan hóa</p>
+                    <h2>Độ đồng thuận láng giềng</h2>
+                </div>
             </header>
             <div class="donut-panel">
-                <canvas id="neighbor-chart" width="420" height="300"></canvas>
-                <script id="chart-data" type="application/json">
-                    {{ result.disease_percentages | tojson }}
-                </script>
+                <canvas id="neighbor-chart" width="520" height="320"></canvas>
+                <script id="chart-data" type="application/json">{{ result.disease_percentages | tojson }}</script>
             </div>
         </section>
     </div>
 
     <div class="result-grid">
         <section class="result-card">
-            <header>
-                <h2>Thông tin model</h2>
+            <header class="card-heading">
+                <div>
+                    <p>Chất lượng mô hình</p>
+                    <h2>Thông số huấn luyện</h2>
+                </div>
+                <span class="status-pill status-pill-soft">KNN model</span>
             </header>
             <div class="model-metrics">
-                <div>
-                    <span>K láng giềng</span>
-                    <strong>{{ result.k }}</strong>
-                </div>
-                <div>
-                    <span>Mẫu train</span>
-                    <strong>{{ result.metrics.training_rows }}</strong>
-                </div>
-                <div>
-                    <span>Mẫu test</span>
-                    <strong>{{ result.metrics.test_rows }}</strong>
-                </div>
-                <div>
-                    <span>Mẫu valid</span>
-                    <strong>{{ result.metrics.valid_rows }}</strong>
-                </div>
-            </div>
-            <div class="accuracy-row">
-                <div>
-                    <span>Test Accuracy</span>
-                    <strong>{{ "%.1f"|format(result.metrics.test_accuracy * 100) }}%</strong>
-                </div>
-                <div>
-                    <span>Valid Accuracy</span>
-                    <strong>{{ "%.1f"|format(result.metrics.valid_accuracy * 100) }}%</strong>
-                </div>
+                <div><span>K láng giềng</span><strong>{{ result.k }}</strong><small>Mẫu gần nhất</small></div>
+                <div><span>Mẫu train</span><strong>{{ result.metrics.training_rows }}</strong><small>70% dữ liệu</small></div>
+                <div><span>Test accuracy</span><strong>{{ "%.1f"|format(result.metrics.test_accuracy * 100) }}%</strong><small>{{ result.metrics.test_rows }} mẫu test</small></div>
+                <div><span>Valid accuracy</span><strong>{{ "%.1f"|format(result.metrics.valid_accuracy * 100) }}%</strong><small>{{ result.metrics.valid_rows }} mẫu valid</small></div>
             </div>
         </section>
 
         <section class="result-card">
-            <header>
-                <h2>Các hàng xóm gần nhất</h2>
+            <header class="card-heading">
+                <div>
+                    <p>Minh bạch mô hình</p>
+                    <h2>Các láng giềng gần nhất</h2>
+                </div>
             </header>
             <div class="neighbor-list">
                 {% for neighbor in result.nearest_neighbors %}
                     <div class="neighbor-item {% if neighbor.disease == result.predicted_disease %}neighbor-primary{% endif %}">
-                        <div>
-                            <strong>{{ neighbor.rank }}</strong>
-                            <span>{{ neighbor.disease }}</span>
-                        </div>
+                        <strong>{{ neighbor.rank }}</strong>
+                        <span>{{ neighbor.disease }}</span>
                         <code>d={{ "%.4f"|format(neighbor.distance) }}</code>
                     </div>
                 {% endfor %}
@@ -121,17 +112,25 @@
         </section>
     </div>
 
-    <section class="result-card">
-        <header>
-            <h2>Triệu chứng đầu vào</h2>
+    <section class="result-card symptom-summary-card">
+        <header class="card-heading">
+            <div>
+                <p>Thông tin đầu vào</p>
+                <h2>Triệu chứng đã phân tích</h2>
+            </div>
+            <span>{{ patient.symptoms | length }} triệu chứng</span>
         </header>
         <div class="selected-list selected-list-inline">
-            {% for symptom in patient.symptoms %}
-                <span>{{ symptom }}</span>
-            {% endfor %}
+            {% for symptom in patient.symptoms %}<span>{{ symptom }}</span>{% endfor %}
         </div>
     </section>
 
-    <a class="secondary-button" href="{{ url_for('index') }}">Quay lại chẩn đoán</a>
+    <div class="result-actions">
+        <a class="secondary-button" href="{{ url_for('index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Chẩn đoán lại
+        </a>
+        <p>Hãy liên hệ cơ sở y tế nếu triệu chứng nghiêm trọng hoặc kéo dài.</p>
+    </div>
 </section>
 {% endblock %}
