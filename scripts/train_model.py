@@ -239,7 +239,7 @@ def stratified_split(labels: torch.Tensor, seed: int = 12) -> DatasetSplit:
 
         if count >= 3:
             train_count = max(1, int(count * 0.7))
-            test_count = max(1, int(count * 0.2))
+            test_count = max(1, int(count * 0.1))
             valid_count = count - train_count - test_count
             if valid_count < 1:
                 train_count -= 1
@@ -361,8 +361,8 @@ def build_artifact(matrix: DatasetMatrix, split: DatasetSplit, k: int, seed: int
         "valid_accuracy": evaluate_split(valid_features, valid_labels, train_features, train_labels, k),
         "split_ratio": {
             "train": 0.7,
-            "test": 0.2,
-            "valid": 0.1,
+            "test": 0.1,
+            "valid": 0.2,
         },
     }
 

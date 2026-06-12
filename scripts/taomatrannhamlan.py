@@ -63,7 +63,7 @@ def evaluate_and_plot():
     print("\n" + "-"*80)
     print(" BÁO CÁO PHÂN LOẠI CHI TIẾT (PRECISION, RECALL, F1-SCORE) ")
     print("-"*80)
-    report = classification_report(y_true, y_pred, target_names=top_15_disease_names, digits=4)
+    report = classification_report(y_true, y_pred, labels=top_15_labels, target_names=top_15_disease_names, digits=4)    
     print(report)
 
     # 4. Vẽ Ma trận nhầm lẫn (Confusion Matrix)

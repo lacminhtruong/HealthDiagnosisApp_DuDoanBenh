@@ -3,14 +3,16 @@ from __future__ import annotations
 import os
 import unicodedata
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 
 from models import Patient
-from services import TrainedModelDiagnosisService
+from services import SymptomSuggestionService, TrainedModelDiagnosisService
+from visualizations import build_rule_metrics_chart_html, build_rule_network_html
 
 
 app = Flask(__name__)
 diagnosis_service = TrainedModelDiagnosisService()
+suggestion_service = SymptomSuggestionService(diagnosis_service.available_symptoms)
 
 
 BODY_SYSTEM_RULES = [
@@ -90,6 +92,27 @@ def index():
     return render_template("index.html", **build_index_context())
 
 
+@app.post("/api/symptom-suggestions")
+def symptom_suggestions():
+    payload = request.get_json(silent=True) or {}
+    if not isinstance(payload, dict):
+        return jsonify({"error": "JSON body must be an object", "suggestions": []}), 400
+
+    symptoms = payload.get("symptoms", [])
+    if not isinstance(symptoms, list):
+        return jsonify({"error": "symptoms must be a list", "suggestions": []}), 400
+
+    suggestions = suggestion_service.suggest(
+        [str(symptom) for symptom in symptoms if str(symptom).strip()]
+    )
+    return jsonify(
+        {
+            "suggestions": [suggestion["symptom"] for suggestion in suggestions],
+            "details": suggestions,
+        }
+    )
+
+
 @app.post("/ket-qua")
 def ket_qua():
     selected_symptoms = request.form.getlist("symptoms")
@@ -131,8 +154,17 @@ def ket_qua():
         weight_kg=weight_kg,
     )
     result = diagnosis_service.predict(patient)
+    association_network_html = build_rule_network_html(selected_symptoms)
+    association_metrics_chart_html = build_rule_metrics_chart_html(selected_symptoms)
 
-    return render_template("result.html", result=result, patient=patient)
+    return render_template(
+        "result.html",
+        result=result,
+        patient=patient,
+        rule_mining=suggestion_service.mining_summary,
+        association_network_html=association_network_html,
+        association_metrics_chart_html=association_metrics_chart_html,
+    )
 
 
 @app.errorhandler(404)

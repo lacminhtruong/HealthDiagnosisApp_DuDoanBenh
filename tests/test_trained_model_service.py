@@ -1,7 +1,8 @@
 import unittest
+from pathlib import Path
 
 from models import Patient
-from services import TrainedModelDiagnosisService
+from services import SymptomSuggestionService, TrainedModelDiagnosisService
 
 
 class TrainedModelDiagnosisServiceTest(unittest.TestCase):
@@ -40,6 +41,20 @@ class TrainedModelDiagnosisServiceTest(unittest.TestCase):
         age_index = service.feature_columns.index("age_scaled")
 
         self.assertLess(young_features[0, age_index].item(), older_features[0, age_index].item())
+
+
+class SymptomSuggestionServiceTest(unittest.TestCase):
+    def test_returns_no_suggestions_when_rules_artifact_is_missing(self):
+        service = SymptomSuggestionService(["Sốt"], Path("missing-rules.json"))
+
+        self.assertEqual(service.suggest(["Sốt"]), [])
+
+    def test_exposes_rule_mining_metrics_from_artifact(self):
+        service = SymptomSuggestionService(["Sốt"])
+
+        self.assertTrue(service.mining_summary["available"])
+        self.assertGreater(service.mining_summary["metrics"]["total_closed"], 0)
+        self.assertGreater(service.mining_summary["metrics"]["total_maximal"], 0)
 
 
 if __name__ == "__main__":

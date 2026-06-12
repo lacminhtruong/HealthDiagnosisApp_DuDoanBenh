@@ -116,6 +116,38 @@
                 <span class="search-result-count" id="search-result-count">{{ symptoms | length }} kết quả</span>
             </div>
 
+            <section
+                class="smart-suggestion-box"
+                id="suggestion-box"
+                data-suggestion-url="{{ url_for('symptom_suggestions') }}"
+                aria-live="polite"
+                hidden
+            >
+                <div class="suggestion-heading">
+                    <span class="suggestion-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 15.5 14.5C14.5 15.2 14 16 14 17h-4c0-1-.5-1.8-1.5-2.5Z"/></svg>
+                    </span>
+                    <div>
+                        <strong>Gợi ý thông minh</strong>
+                        <small>Các triệu chứng thường đi cùng lựa chọn hiện tại</small>
+                    </div>
+                    <div class="suggestion-actions">
+                        <span class="suggestion-loading" data-suggestion-loading hidden>Đang phân tích...</span>
+                        <button
+                            class="suggestion-toggle"
+                            type="button"
+                            data-suggestion-toggle
+                            aria-expanded="true"
+                            title="Thu gọn gợi ý"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 15 6-6 6 6"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="suggestion-tags" data-suggestion-tags></div>
+                <p class="suggestion-message" data-suggestion-message hidden></p>
+            </section>
+
             <div class="search-empty" id="search-empty" hidden>
                 <span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -233,7 +265,7 @@
                 </div>
             </section>
 
-            <button class="primary-button" type="submit">
+            <button class="primary-button" type="submit" data-primary-submit>
                 <span>
                     <small>Bước 3</small>
                     Phân tích bằng KNN
@@ -245,6 +277,17 @@
                 Thông tin chỉ được dùng để tính toán kết quả trong phiên hiện tại.
             </p>
         </aside>
+
+        <div class="diagnosis-action-dock" data-submit-dock>
+            <div class="dock-copy">
+                <span><strong id="dock-selected-count">{{ selected_symptoms | length }}</strong> triệu chứng đã chọn</span>
+                <small>Hoàn tất hồ sơ để nhận kết quả KNN</small>
+            </div>
+            <button class="dock-submit-button" type="submit">
+                <span>Phân tích bằng KNN</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </div>
     </form>
 </section>
 {% endblock %}

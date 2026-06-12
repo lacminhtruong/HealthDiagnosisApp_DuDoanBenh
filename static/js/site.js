@@ -60,6 +60,7 @@ function syncPatientPreview() {
     const checkboxes = [...document.querySelectorAll("input[name='symptoms']")];
     const selectedCount = document.getElementById("selected-count");
     const selectedCountSide = document.getElementById("selected-count-side");
+    const dockSelectedCount = document.getElementById("dock-selected-count");
     const selectedList = document.getElementById("selected-symptom-list");
     const heightInput = document.getElementById("height-input");
     const weightInput = document.getElementById("weight-input");
@@ -80,6 +81,9 @@ function syncPatientPreview() {
         }
         if (selectedCountSide) {
             selectedCountSide.textContent = selected.length;
+        }
+        if (dockSelectedCount) {
+            dockSelectedCount.textContent = selected.length;
         }
 
         if (!selectedList) {
@@ -144,7 +148,182 @@ function syncPatientPreview() {
     updateBmi();
 }
 
-function drawNeighborChart() {
+function setupSmartSuggestions() {
+    const checkboxes = [...document.querySelectorAll("input[name='symptoms']")];
+    const suggestionBox = document.getElementById("suggestion-box");
+    const suggestionTags = suggestionBox?.querySelector("[data-suggestion-tags]");
+    const suggestionMessage = suggestionBox?.querySelector("[data-suggestion-message]");
+    const loadingLabel = suggestionBox?.querySelector("[data-suggestion-loading]");
+    const toggleButton = suggestionBox?.querySelector("[data-suggestion-toggle]");
+    const searchInput = document.getElementById("symptom-search");
+
+    if (!checkboxes.length || !suggestionBox || !suggestionTags || !suggestionMessage) {
+        return;
+    }
+
+    const checkboxBySymptom = new Map(
+        checkboxes.map((checkbox) => [normalizeText(checkbox.value), checkbox]),
+    );
+    let activeRequest;
+
+    const toggleSuggestionBox = () => {
+        const isCollapsed = suggestionBox.classList.toggle("is-collapsed");
+        if (toggleButton) {
+            toggleButton.setAttribute("aria-expanded", String(!isCollapsed));
+            toggleButton.title = isCollapsed ? "Mở rộng gợi ý" : "Thu gọn gợi ý";
+        }
+    };
+
+    const showMessage = (message) => {
+        suggestionTags.replaceChildren();
+        suggestionMessage.textContent = message;
+        suggestionMessage.hidden = false;
+    };
+
+    const selectSuggestion = (symptom) => {
+        const checkbox = checkboxBySymptom.get(normalizeText(symptom));
+        if (!checkbox || checkbox.checked) {
+            return;
+        }
+
+        if (searchInput?.value) {
+            searchInput.value = "";
+            searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+        const option = checkbox.closest("[data-symptom-option]");
+        option?.classList.remove("suggestion-selected");
+        window.requestAnimationFrame(() => option?.classList.add("suggestion-selected"));
+        option?.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
+    const renderSuggestions = (details) => {
+        suggestionTags.replaceChildren();
+        suggestionMessage.hidden = true;
+
+        const availableDetails = details.filter((suggestion) => (
+            checkboxBySymptom.has(normalizeText(suggestion.symptom))
+        ));
+        if (!availableDetails.length) {
+            showMessage("Chưa có gợi ý phù hợp cho tổ hợp triệu chứng hiện tại.");
+            return;
+        }
+
+        availableDetails.forEach((suggestion) => {
+            const tag = document.createElement("button");
+            tag.className = "suggestion-tag";
+            tag.type = "button";
+            tag.title = `Độ tin cậy ${suggestion.confidence_percent}%`;
+
+            const label = document.createTextNode(suggestion.symptom);
+            const confidence = document.createElement("span");
+            confidence.textContent = `+ ${suggestion.confidence_percent}%`;
+            tag.append(label, confidence);
+            tag.addEventListener("click", () => selectSuggestion(suggestion.symptom));
+            suggestionTags.appendChild(tag);
+        });
+    };
+
+    const loadSuggestions = async () => {
+        const selectedSymptoms = checkboxes
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+
+        activeRequest?.abort();
+        if (!selectedSymptoms.length) {
+            suggestionBox.hidden = true;
+            return;
+        }
+
+        const requestController = new AbortController();
+        activeRequest = requestController;
+        suggestionBox.hidden = false;
+        if (loadingLabel) {
+            loadingLabel.hidden = false;
+        }
+        suggestionMessage.hidden = true;
+
+        try {
+            const response = await fetch(suggestionBox.dataset.suggestionUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ symptoms: selectedSymptoms }),
+                signal: requestController.signal,
+            });
+            if (!response.ok) {
+                throw new Error(`Suggestion API returned ${response.status}`);
+            }
+
+            const payload = await response.json();
+            renderSuggestions(Array.isArray(payload.details) ? payload.details : []);
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                showMessage("Chưa thể tải gợi ý lúc này. Bạn vẫn có thể tiếp tục chọn triệu chứng.");
+            }
+        } finally {
+            if (activeRequest === requestController && loadingLabel) {
+                loadingLabel.hidden = true;
+            }
+        }
+    };
+
+    checkboxes.forEach((checkbox) => checkbox.addEventListener("change", loadSuggestions));
+    toggleButton?.addEventListener("click", toggleSuggestionBox);
+    loadSuggestions();
+}
+
+function setupSubmitDock() {
+    const submitButton = document.querySelector("[data-primary-submit]");
+    const submitDock = document.querySelector("[data-submit-dock]");
+    const selectedCard = document.querySelector(".selected-card");
+
+    if (!submitButton || !submitDock) {
+        return;
+    }
+
+    let buttonIsVisible = false;
+    let updateFrame;
+
+    const updateDockVisibility = () => {
+        const selectedRect = selectedCard?.getBoundingClientRect();
+        const dockBottom = Number.parseFloat(window.getComputedStyle(submitDock).bottom) || 0;
+        const dockTop = window.innerHeight - dockBottom - submitDock.offsetHeight;
+        const overlapsSelection = window.innerWidth <= 1120
+            && selectedRect
+            && selectedRect.bottom > dockTop - 12
+            && selectedRect.top < window.innerHeight - dockBottom + 12;
+
+        submitDock.classList.toggle("is-visible", !buttonIsVisible && !overlapsSelection);
+    };
+
+    const scheduleDockUpdate = () => {
+        window.cancelAnimationFrame(updateFrame);
+        updateFrame = window.requestAnimationFrame(updateDockVisibility);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+        window.addEventListener("scroll", scheduleDockUpdate, { passive: true });
+        window.addEventListener("resize", scheduleDockUpdate);
+        updateDockVisibility();
+        return;
+    }
+
+    const observer = new IntersectionObserver(
+        ([entry]) => {
+            buttonIsVisible = entry.isIntersecting;
+            scheduleDockUpdate();
+        },
+        { threshold: 0.7, rootMargin: "-76px 0px -12px" },
+    );
+    observer.observe(submitButton);
+    window.addEventListener("scroll", scheduleDockUpdate, { passive: true });
+    window.addEventListener("resize", scheduleDockUpdate);
+    updateDockVisibility();
+}
+
+function drawNeighborChart(progress = 1) {
     const canvas = document.getElementById("neighbor-chart");
     const dataElement = document.getElementById("chart-data");
 
@@ -184,7 +363,7 @@ function drawNeighborChart() {
     let startAngle = -Math.PI / 2;
 
     entries.forEach(([, percentage], index) => {
-        const sliceAngle = (percentage / total) * Math.PI * 2;
+        const sliceAngle = (percentage / total) * Math.PI * 2 * progress;
         context.beginPath();
         context.moveTo(centerX, centerY);
         context.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
@@ -203,7 +382,7 @@ function drawNeighborChart() {
     context.font = "800 28px Segoe UI, Arial";
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(`${maxEntry[1]}%`, centerX, centerY - 7);
+    context.fillText(`${Math.round(maxEntry[1] * progress)}%`, centerX, centerY - 7);
     context.fillStyle = "#6a7f8e";
     context.font = "800 12px Segoe UI, Arial";
     context.fillText("cao nhất", centerX, centerY + 22);
@@ -213,6 +392,7 @@ function drawNeighborChart() {
     const legendWidth = isCompact ? cssWidth - 40 : cssWidth - legendX - 20;
     const rowHeight = 34;
 
+    context.globalAlpha = Math.min(1, progress * 1.6);
     entries.forEach(([label, percentage], index) => {
         const y = legendStartY + index * rowHeight;
 
@@ -230,6 +410,73 @@ function drawNeighborChart() {
         context.textAlign = "right";
         context.fillText(`${percentage}%`, legendX + legendWidth, y - 5);
     });
+    context.globalAlpha = 1;
+}
+
+function animateResultVisuals() {
+    const confidenceRing = document.querySelector(".confidence-ring");
+    const confidenceNumber = document.querySelector("[data-count-up]");
+    const voteCard = document.querySelector(".vote-card");
+    const chartCard = document.querySelector(".chart-card");
+    const canvas = document.getElementById("neighbor-chart");
+
+    if (!confidenceRing && !voteCard && !chartCard) {
+        return;
+    }
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reducedMotion ? 1 : 1250;
+    const targetScore = Number(confidenceRing?.dataset.score || 0);
+    let started = false;
+
+    const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+    const startAnimations = () => {
+        if (started) {
+            return;
+        }
+        started = true;
+        confidenceRing?.classList.add("is-animated");
+        voteCard?.classList.add("is-animated");
+        chartCard?.classList.add("is-animated");
+
+        const startedAt = performance.now();
+        const animateFrame = (now) => {
+            const progress = Math.min(1, (now - startedAt) / duration);
+            const easedProgress = easeOutCubic(progress);
+
+            confidenceRing?.style.setProperty("--ring-progress", targetScore * easedProgress);
+            if (confidenceNumber) {
+                confidenceNumber.textContent = `${Math.round(targetScore * easedProgress)}%`;
+            }
+            if (canvas) {
+                drawNeighborChart(easedProgress);
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(animateFrame);
+            }
+        };
+        requestAnimationFrame(animateFrame);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+        startAnimations();
+        return;
+    }
+
+    const target = confidenceRing || document.querySelector(".result-grid-primary");
+    const observer = new IntersectionObserver(
+        ([entry]) => {
+            if (entry.isIntersecting) {
+                startAnimations();
+                observer.disconnect();
+            }
+        },
+        { threshold: 0.18 },
+    );
+    if (target) {
+        observer.observe(target);
+    }
 }
 
 function trimText(context, text, maxWidth) {
@@ -262,10 +509,12 @@ function roundRect(context, x, y, width, height, radius) {
 document.addEventListener("DOMContentLoaded", () => {
     setupSymptomSearch();
     syncPatientPreview();
-    drawNeighborChart();
+    setupSmartSuggestions();
+    setupSubmitDock();
+    animateResultVisuals();
 });
 
 window.addEventListener("resize", () => {
     window.clearTimeout(window.neighborChartResizeTimer);
-    window.neighborChartResizeTimer = window.setTimeout(drawNeighborChart, 120);
+    window.neighborChartResizeTimer = window.setTimeout(() => drawNeighborChart(1), 120);
 });

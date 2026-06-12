@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+import json
 from pathlib import Path
 import unicodedata
 
@@ -11,11 +12,121 @@ from models import DiagnosisResult, Patient
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_MODEL_PATH = PROJECT_ROOT / "trained_models" / "health_diagnosis_model.pt"
+DEFAULT_ASSOCIATION_RULES_PATH = PROJECT_ROOT / "trained_models" / "association_rules_meta.json"
 SYMPTOM_PREFIX = "symptom__"
 
 
 def normalize_text(value: object) -> str:
     return " ".join(unicodedata.normalize("NFC", str(value or "")).strip().split()).casefold()
+
+
+class SymptomSuggestionService:
+    def __init__(
+        self,
+        available_symptoms: list[str],
+        rules_path: Path = DEFAULT_ASSOCIATION_RULES_PATH,
+    ) -> None:
+        self.symptom_lookup = {
+            normalize_text(symptom): symptom
+            for symptom in available_symptoms
+        }
+        self.algorithm = "Apriori / Association Rules"
+        self.parameters: dict[str, object] = {}
+        self.metrics: dict[str, object] = {}
+        self.rules: list[dict[str, object]] = []
+
+        if not rules_path.exists():
+            return
+
+        try:
+            artifact = json.loads(rules_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return
+
+        self.algorithm = str(artifact.get("algorithm", self.algorithm))
+        self.parameters = dict(artifact.get("parameters", {}))
+        self.metrics = dict(artifact.get("metrics", {}))
+
+        for rule in artifact.get("rules", []):
+            antecedents = self._clean_symptoms(rule.get("antecedents"))
+            consequents = self._clean_symptoms(rule.get("consequents"))
+            if not antecedents or not consequents:
+                continue
+
+            antecedent_keys = {normalize_text(symptom) for symptom in antecedents}
+            consequent_keys = {
+                normalize_text(symptom)
+                for symptom in consequents
+                if normalize_text(symptom) in self.symptom_lookup
+            }
+            if consequent_keys:
+                self.rules.append(
+                    {
+                        "antecedent_keys": antecedent_keys,
+                        "consequent_keys": consequent_keys,
+                        "confidence_percent": float(rule.get("confidence_percent", 0)),
+                        "support_percent": float(rule.get("support_percent", 0)),
+                        "lift": float(rule.get("lift", 0)),
+                    }
+                )
+
+    @property
+    def mining_summary(self) -> dict[str, object]:
+        required_metrics = {"total_frequent", "total_closed", "total_maximal"}
+        return {
+            "available": required_metrics.issubset(self.metrics),
+            "algorithm": self.algorithm,
+            "parameters": self.parameters,
+            "metrics": self.metrics,
+        }
+
+    @staticmethod
+    def _clean_symptoms(values: object) -> list[str]:
+        if not isinstance(values, list):
+            return []
+        return [
+            " ".join(unicodedata.normalize("NFC", str(value)).strip().split())
+            for value in values
+            if str(value).strip()
+        ]
+
+    def suggest(self, selected_symptoms: list[str], limit: int = 6) -> list[dict[str, object]]:
+        selected_keys = {
+            normalize_text(symptom)
+            for symptom in selected_symptoms
+            if normalize_text(symptom) in self.symptom_lookup
+        }
+        if not selected_keys:
+            return []
+
+        best_by_symptom: dict[str, dict[str, object]] = {}
+        for rule in self.rules:
+            antecedent_keys = rule["antecedent_keys"]
+            if not antecedent_keys.issubset(selected_keys):
+                continue
+
+            for symptom_key in rule["consequent_keys"] - selected_keys:
+                suggestion = {
+                    "symptom": self.symptom_lookup[symptom_key],
+                    "confidence_percent": round(float(rule["confidence_percent"]), 2),
+                    "support_percent": round(float(rule["support_percent"]), 2),
+                    "lift": round(float(rule["lift"]), 3),
+                    "matched_symptom_count": len(antecedent_keys),
+                }
+                current = best_by_symptom.get(symptom_key)
+                if current is None or self._sort_key(suggestion) > self._sort_key(current):
+                    best_by_symptom[symptom_key] = suggestion
+
+        return sorted(best_by_symptom.values(), key=self._sort_key, reverse=True)[:limit]
+
+    @staticmethod
+    def _sort_key(suggestion: dict[str, object]) -> tuple[int, float, float, float]:
+        return (
+            int(suggestion["matched_symptom_count"]),
+            float(suggestion["confidence_percent"]),
+            float(suggestion["lift"]),
+            float(suggestion["support_percent"]),
+        )
 
 
 class TrainedModelDiagnosisService:

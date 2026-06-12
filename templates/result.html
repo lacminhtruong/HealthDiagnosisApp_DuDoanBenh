@@ -23,8 +23,8 @@
         </div>
 
         <div class="confidence-card">
-            <div class="confidence-ring" style="--score: {{ result.confidence_percent }};">
-                <div><strong>{{ result.confidence_percent }}%</strong><span>độ đồng thuận</span></div>
+            <div class="confidence-ring" data-score="{{ result.confidence_percent }}">
+                <div><strong data-count-up="{{ result.confidence_percent }}">0%</strong><span>độ đồng thuận</span></div>
             </div>
             <div class="confidence-copy">
                 <span class="status-pill">Kết quả hàng đầu</span>
@@ -56,7 +56,7 @@
                             <span>{{ disease }}</span>
                             <strong>{{ percentage }}%</strong>
                         </div>
-                        <div class="vote-track" aria-hidden="true"><span style="width: {{ percentage }}%"></span></div>
+                        <div class="vote-track" aria-hidden="true"><span style="--target-width: {{ percentage }}%;"></span></div>
                     </div>
                 {% endfor %}
             </div>
@@ -111,6 +111,87 @@
             </div>
         </section>
     </div>
+
+    {% if rule_mining.available %}
+        <section class="result-card rule-mining-card">
+            <header class="card-heading">
+                <div>
+                    <p>Khai phá dữ liệu bổ trợ</p>
+                    <h2>Chỉ số tập phổ biến và luật kết hợp</h2>
+                </div>
+                <span class="status-pill status-pill-soft">{{ rule_mining.algorithm }}</span>
+            </header>
+            <div class="model-metrics rule-mining-metrics">
+                <div>
+                    <span>Tập phổ biến</span>
+                    <strong>{{ rule_mining.metrics.total_frequent }}</strong>
+                    <small>Support ≥ {{ "%.2f"|format(rule_mining.parameters.min_support * 100) }}%</small>
+                </div>
+                <div>
+                    <span>Tập phổ biến đóng</span>
+                    <strong>{{ rule_mining.metrics.total_closed }}</strong>
+                    <small>Không có tập cha cùng support</small>
+                </div>
+                <div>
+                    <span>Tập phổ biến tối đại</span>
+                    <strong>{{ rule_mining.metrics.total_maximal }}</strong>
+                    <small>Không có tập cha phổ biến</small>
+                </div>
+                <div>
+                    <span>Luật kết hợp</span>
+                    <strong>{{ rule_mining.metrics.total_rules_found }}</strong>
+                    <small>Confidence ≥ {{ "%.0f"|format(rule_mining.parameters.min_confidence * 100) }}%</small>
+                </div>
+            </div>
+            <p class="rule-mining-note">
+                Các chỉ số này được khai phá từ {{ rule_mining.metrics.total_transactions }} hồ sơ,
+                hỗ trợ tính năng gợi ý thông minh và không thay đổi kết quả bỏ phiếu KNN.
+            </p>
+        </section>
+    {% endif %}
+
+    <section class="association-visual-section">
+        <div class="section-intro visualization-intro">
+            <div>
+                <p class="eyebrow"><span></span>Trực quan hóa luật kết hợp</p>
+                <h2>Mối liên hệ giữa các triệu chứng</h2>
+                <p>Di chuột, kéo, zoom hoặc chạm vào các điểm dữ liệu để khám phá luật khớp với đầu vào hiện tại.</p>
+            </div>
+        </div>
+        <div class="association-visual-grid">
+            <article class="result-card association-visual-card">
+                <header class="card-heading">
+                    <div>
+                        <p>PyVis · NetworkX</p>
+                        <h2>Mạng lưới triệu chứng liên quan</h2>
+                    </div>
+                    <span class="visual-legend"><i></i>Đã chọn <i></i>Gợi ý</span>
+                </header>
+                <div class="network-frame-shell">
+                    <iframe
+                        class="association-network-frame"
+                        title="Mạng lưới luật kết hợp triệu chứng"
+                        srcdoc="{{ association_network_html | e }}"
+                        sandbox="allow-scripts"
+                        loading="lazy"
+                    ></iframe>
+                </div>
+            </article>
+
+            <article class="result-card association-visual-card">
+                <header class="card-heading">
+                    <div>
+                        <p>Plotly · Interactive</p>
+                        <h2>Confidence, support và lift</h2>
+                    </div>
+                    <span>Tương tác</span>
+                </header>
+                <div class="plotly-chart-shell">
+                    {{ association_metrics_chart_html | safe }}
+                </div>
+            </article>
+        </div>
+    </section>
 
     <section class="result-card symptom-summary-card">
         <header class="card-heading">

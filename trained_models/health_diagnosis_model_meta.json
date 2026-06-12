@@ -11,15 +11,15 @@
     "seed": 12,
     "total_rows": 3500,
     "training_rows": 2428,
-    "test_rows": 683,
-    "valid_rows": 389,
+    "test_rows": 329,
+    "valid_rows": 743,
     "training_accuracy": 0.9872,
-    "test_accuracy": 0.9546,
-    "valid_accuracy": 0.9692,
+    "test_accuracy": 0.9544,
+    "valid_accuracy": 0.9623,
     "split_ratio": {
       "train": 0.7,
-      "test": 0.2,
-      "valid": 0.1
+      "test": 0.1,
+      "valid": 0.2
     }
   },
   "disease_to_label": {
