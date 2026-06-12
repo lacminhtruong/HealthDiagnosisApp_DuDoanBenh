@@ -1,0 +1,14 @@
+[project]
+name = "health-diagnosis-app"
+version = "1.0.0"
+description = "Ung dung chan doan benh bang thuat toan KNN, viet bang Python Flask."
+requires-python = ">=3.11"
+dependencies = [
+    "Flask>=3.0,<4.0",
+    "numpy>=2.0,<3.0",
+    "openpyxl>=3.1,<4.0",
+    "torch>=2.3,<3.0",
+]
+
+[tool.uv]
+package = false

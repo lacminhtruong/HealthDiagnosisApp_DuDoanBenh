@@ -1,0 +1,88 @@
+﻿@model KetQuaKNN
+
+<h2>Kết quả chẩn đoán</h2>
+
+<div class="alert alert-info">
+    <h4>Bệnh dự đoán: <strong>@Model.BenhDuDoan</strong></h4>
+</div>
+
+<h4>Tỷ lệ phần trăm:</h4>
+<div class="progress-bar-container">
+    @foreach (var tyLe in Model.TyLeBenh)
+    {
+        <div class="disease-progress">
+            <label>@tyLe.Key: @tyLe.Value%</label>
+            <div class="progress">
+                <div class="progress-bar" style="width: @tyLe.Value%"></div>
+            </div>
+        </div>
+    }
+</div>
+
+<h4>Biểu đồ hàng xóm gần nhất:</h4>
+<canvas id="neighborChart" width="400" height="200"></canvas>
+
+<h4>Giải thích phép tính:</h4>
+<pre>@Model.GiaiThichPhepTinh</pre>
+
+<h4>Chi tiết @Model.K hàng xóm gần nhất:</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Bệnh</th>
+            <th>Khoảng cách</th>
+            <th>Triệu chứng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.HangXomGanNhat.Count; i++)
+        {
+            var hangXom = Model.HangXomGanNhat[i];
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@hangXom.TenBenh</td>
+                <td>@Math.Round(hangXom.KhoangCach, 2)</td>
+                <td>@string.Join(", ", hangXom.DuLieu.DuLieuBenhNhan.DanhSachTrieuChung)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Vẽ biểu đồ hàng xóm gần nhất
+        const ctx = document.getElementById('neighborChart').getContext('2d');
+        const diseases = @Html.Raw(Json.Serialize(Model.TyLeBenh.Keys));
+        const percentages = @Html.Raw(Json.Serialize(Model.TyLeBenh.Values));
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: diseases,
+                datasets: [{
+                    label: 'Tỷ lệ phần trăm',
+                    data: percentages,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Tỷ lệ %'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

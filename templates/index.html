@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block title %}Chẩn đoán bằng KNN{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="page-shell hero-inner">
+        <div>
+            <p class="eyebrow">KNN Model</p>
+            <h1>Chẩn đoán bệnh bằng thuật toán KNN</h1>
+            <p class="hero-subtitle">Chọn triệu chứng phù hợp để nhận kết quả chẩn đoán</p>
+        </div>
+        <div class="hero-stats">
+            <div>
+                <span>Triệu chứng</span>
+                <strong>{{ symptoms | length }}</strong>
+            </div>
+            <div>
+                <span>Nhóm cơ thể</span>
+                <strong>{{ symptom_groups | length }}</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-shell page-content">
+    {% if errors %}
+        <div class="notice notice-error" role="alert">
+            {% for error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form class="diagnosis-form" action="{{ url_for('ket_qua') }}" method="post">
+        <div class="symptom-column">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input id="symptom-search" type="search" placeholder="Tìm kiếm triệu chứng...">
+            </div>
+
+            {% for group in symptom_groups %}
+                <fieldset class="symptom-group-card group-tone-{{ loop.index0 % 6 }}" data-symptom-group>
+                    <legend>
+                        <span class="group-dot"></span>
+                        <strong>{{ group.name }}</strong>
+                        <small>{{ group.symptoms | length }} triệu chứng</small>
+                    </legend>
+                    <div class="symptom-grid">
+                        {% for symptom in group.symptoms %}
+                            <label class="symptom-option" data-symptom-option data-symptom-name="{{ symptom | lower }}">
+                                <input
+                                    type="checkbox"
+                                    name="symptoms"
+                                    value="{{ symptom }}"
+                                    {% if symptom in selected_symptoms %}checked{% endif %}
+                                >
+                                <span class="fake-check" aria-hidden="true"></span>
+                                <span class="symptom-name">{{ symptom }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endfor %}
+        </div>
+
+        <aside class="diagnosis-sidebar">
+            <section class="sidebar-card">
+                <header>
+                    <h2>Thông tin cơ thể</h2>
+                </header>
+                <div class="sidebar-body">
+                    <label class="field">
+                        <span>Chiều cao</span>
+                        <div class="input-with-unit">
+                            <input
+                                id="height-input"
+                                type="number"
+                                name="height_cm"
+                                min="1"
+                                step="0.1"
+                                value="{{ height_cm }}"
+                                placeholder="170"
+                                required
+                            >
+                            <small>cm</small>
+                        </div>
+                    </label>
+
+                    <label class="field">
+                        <span>Cân nặng</span>
+                        <div class="input-with-unit">
+                            <input
+                                id="weight-input"
+                                type="number"
+                                name="weight_kg"
+                                min="1"
+                                step="0.1"
+                                value="{{ weight_kg }}"
+                                placeholder="65"
+                                required
+                            >
+                            <small>kg</small>
+                        </div>
+                    </label>
+
+                    <div class="bmi-card">
+                        <span>BMI</span>
+                        <strong id="bmi-preview">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="sidebar-card">
+                <header class="selected-header">
+                    <h2>Triệu chứng đã chọn</h2>
+                    <strong id="selected-count">{{ selected_symptoms | length }}</strong>
+                </header>
+                <div class="selected-list" id="selected-symptom-list">
+                    {% if selected_symptoms %}
+                        {% for symptom in selected_symptoms %}
+                            <span>{{ symptom }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="muted-chip">Chưa chọn triệu chứng nào</span>
+                    {% endif %}
+                </div>
+            </section>
+
+            <button class="primary-button" type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Chẩn đoán bằng KNN
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
+        </aside>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+.trieu-chung-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.form-check {
+    margin-bottom: 5px;
+}
+
+.disease-progress {
+    margin-bottom: 15px;
+}
+
+.progress-bar-container {
+    margin: 20px 0;
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+.alert {
+    margin: 20px 0;
+}
