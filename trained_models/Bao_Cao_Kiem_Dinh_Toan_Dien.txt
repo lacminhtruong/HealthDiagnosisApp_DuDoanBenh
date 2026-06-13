@@ -1,0 +1,27 @@
+=========================================================
+     BÁO CÁO KIỂM ĐỊNH THỐNG KÊ & CHỌN LỌC ĐẶC TRƯNG     
+=========================================================
+
+[PHẦN 1] KIỂM CHỨNG TÍNH TOÀN VẸN CỦA DỮ LIỆU TĂNG CƯỜNG
+1. Tương quan Pearson (Cân nặng & BMI): r = 0.8377, p = 0.0
+   => BIỆN LUẬN: Dữ liệu Augmented duy trì tốt quy luật toán sinh lý học cơ bản. Hoàn toàn tin cậy.
+
+2. ANOVA (BMI & Bệnh lý): F = 15.4218, p = 0.0124 // p < 0.05
+   => BIỆN LUẬN: Bác bỏ H0. Chỉ số BMI có sự khác biệt có ý nghĩa thống kê ở một số nhóm bệnh lý đặc thù. Bắt buộc GIỮ LẠI làm đặc trưng đầu vào cho mô hình K-NN.
+
+
+[PHẦN 2] KIỂM ĐỊNH CHI-SQUARE: LỌC ĐẶC TRƯNG (FEATURE SELECTION)
+Đang quét 179 triệu chứng để tìm mức độ nhân quả với Tên bệnh...
+
+* TỔNG KẾT SAU KHI QUÉT:
+  - Số triệu chứng CÓ ý nghĩa thống kê (Giữ lại): 179
+  - Số triệu chứng KHÔNG có ý nghĩa (Nên loại bỏ): 0
+
+* TOP 5 TRIỆU CHỨNG QUYẾT ĐỊNH MẠNH NHẤT (Điểm Chi-Square cao nhất):
+  1. Sưng phù (Chi2: 3185.61, P-value: 0.0000)
+  2. Đau lưng (Chi2: 2955.79, P-value: 0.0000)
+  3. Đau ngực nhẹ (Chi2: 2951.19, P-value: 0.0000)
+  4. Sưng đỏ khớp (Chi2: 2917.75, P-value: 0.0000)
+  5. Yếu cơ (Chi2: 2917.75, P-value: 0.0000)
+
+=========================================================

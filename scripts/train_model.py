@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from sklearn.metrics import classification_report, confusion_matrix
 import argparse
 import json
 import random
@@ -450,6 +450,39 @@ def main() -> None:
     print(f"Train accuracy: {metrics['training_accuracy']}")
     print(f"Test accuracy: {metrics['test_accuracy']}")
     print(f"Valid accuracy: {metrics['valid_accuracy']}")
+
+    # =========================================================================
+    # ĐOẠN CODE TỰ ĐỘNG CHẤM ĐIỂM VÀ TẠO BÁO CÁO PRECISION, RECALL, F1
+    # =========================================================================
+    print("\n" + "="*80)
+    print(" BÁO CÁO HIỆU NĂNG CHI TIẾT TRÊN TẬP TEST (ĐỂ BỎ VÀO SLIDE)")
+    print("="*80)
+
+    # 1. Lấy dữ liệu tập Test để thi
+    test_features = matrix.features[split.test_indices]
+    test_labels = matrix.labels[split.test_indices]
+    train_features = matrix.features[split.train_indices]
+    train_labels = matrix.labels[split.train_indices]
+
+    # 2. Cho K-NN làm bài thi thực tế
+    test_predictions = predict_knn(test_features, train_features, train_labels, args.k)
+
+    # 3. Lấy tên 50 bệnh để in ra cho đẹp
+    target_names = list(matrix.disease_to_label.keys())
+
+    # 4. In Classification Report (Chứa Precision, Recall, F1)
+    report = classification_report(
+        test_labels.cpu().numpy(), 
+        test_predictions.cpu().numpy(), 
+        target_names=target_names,
+        zero_division=0
+    )
+    print(report)
+    
+    # 5. Khởi tạo sẵn Ma trận nhầm lẫn (Nếu sau này bạn muốn vẽ biểu đồ)
+    cm = confusion_matrix(test_labels.cpu().numpy(), test_predictions.cpu().numpy())
+    print("\n[INFO] Đã tạo thành công Ma trận nhầm lẫn (Confusion Matrix) ẩn trong code.")
+    print("="*80)
 
 if __name__ == "__main__":
     main()

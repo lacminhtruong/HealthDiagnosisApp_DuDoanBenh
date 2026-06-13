@@ -1,0 +1,19 @@
+--- BẮT ĐẦU KIỂM ĐỊNH THỐNG KÊ DỮ LIỆU ---
+
+1. KIỂM ĐỊNH TƯƠNG QUAN PEARSON (Cân nặng và BMI)
+  - Hệ số tương quan (r): 0.8377
+  - P-value: 0.0
+  => KẾT LUẬN: Bác bỏ H0. Cân nặng và BMI có mối tương quan tuyến tính rất mạnh.
+
+2. KIỂM ĐỊNH PHƯƠNG SAI ANOVA (BMI và Tên Bệnh)
+  - Chỉ số F-Statistic: 1.0842
+  - P-value: 0.31992157092160844
+  => KẾT LUẬN: Chấp nhận H0. BMI không thay đổi nhiều giữa các bệnh.
+
+3. KIỂM ĐỊNH CHI-SQUARE (Triệu chứng Sốt và Tên Bệnh)
+  - Kiểm định trên triệu chứng: Sốt
+  - Chỉ số Chi-square: 2146.9951
+  - P-value: 0.0
+  => KẾT LUẬN: Bác bỏ H0. Triệu chứng này có ý nghĩa thống kê cao, rất hữu ích để K-NN phân loại bệnh.
+
+---------------------------------------------------------
